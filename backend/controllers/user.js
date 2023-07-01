@@ -226,6 +226,132 @@ const updateUserByAdmin = asyncHandler(async (req, res) => {
 });
 
 
+// Phương thức cập nhập địa chỉ của người dùng
+const updateUserAddress = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  if (!req.body.address) throw new Error("Thiếu trường đầu vào");
+  const response = await User.findByIdAndUpdate(
+    _id,
+    { $push: { address: req.body.address } },
+    { new: true }
+  ).select("-password -role -refreshToken");
+  return res.status(200).json({
+    success: response ? true : false,
+    msg: response ? `Cập nhập địa chỉ của người dùng thành công` : `Cập nhập địa chỉ của người dùng thất bại`,
+    updatedUser: response ? response : null,
+  });
+});
+
+// Phương thức cập nhập giỏ hàng người dùng
+const updateCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { pid, quantity, color } = req.body;
+  if (!pid || !quantity || !color) throw new Error("Thiếu trường đầu vào");
+  const user = await User.findById(_id).select("cart");
+  const alreadyProduct = user?.cart?.find((el) => el.product.toString() == pid);
+  if (alreadyProduct) {
+    if (alreadyProduct.color === color) {
+      const response = await User.updateOne(
+        { cart: { $elemMatch: alreadyProduct } },
+        { $set: { "cart.$.quantity": quantity } },
+        { new: true }
+      );
+      return res.status(200).json({
+        success: response ? true : false,
+        updatedUser: response ? response : "Có gì đó bị lỗi!!",
+      });
+    } else {
+      const response = await User.findByIdAndUpdate(
+        _id,
+        { $push: { cart: { product: pid, quantity, color } } },
+        { new: true }
+      );
+      return res.status(200).json({
+        success: response ? true : false,
+        updatedUser: response ? response : "Có gì đó bị lỗi!!",
+      });
+    }
+  } else {
+    const response = await User.findByIdAndUpdate(
+      _id,
+      { $push: { cart: { product: pid, quantity, color } } },
+      { new: true }
+    );
+    return res.status(200).json({
+      success: response ? true : false,
+      updatedUser: response ? response : "Có gì đó bị lỗi!!",
+    });
+  }
+});
+
+// Phương thức thêm sản phẩm vào danh sách yêu thích
+const addToWishList = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { pid } = req.body;
+  if (!pid) throw new Error("Thiếu trường đầu vào");
+  const user = User.findById(_id);
+  const alreadyAdded = user?.wishlist?.find(
+    (id) => id.toString() === pid
+  );
+  if (alreadyAdded) {
+    const user = await User.findByIdAndUpdate(
+      _id,
+      {
+        $pull: { wishlist: pid },
+      },
+      { new: true }
+    ).populate("wishlist", "title");
+    return res.status(200).json({
+      status: user ? true : false,
+      userData: user ? user : "Không thể đưa sản phẩm vào danh sách yêu thích",
+    });
+  } else {
+    const user = await User.findByIdAndUpdate(
+      _id,
+      {
+        $push: { wishlist: pid },
+      },
+      { new: true }
+    ).populate("wishlist", "title");
+    return res.status(200).json({
+      status: user ? true : false,
+      userData: user ? user : "Không thể đưa sản phẩm vào danh sách yêu thích",
+    });
+  }
+});
+
+
+// Khóa người dùng
+const userBlocked = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const blockedUser = await User.findByIdAndUpdate(id, { isBlocked: true }, { new: true });
+  return res.status(200).json({
+    status: blockedUser ? true : false,
+    userData: blockedUser ? blockedUser : "Không thể khóa người dùng"
+  })
+})
+
+// Mở khóa người dùng
+const unblockedUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const unblocked = await User.findByIdAndUpdate(id , { isBlocked: false }, { new: true });
+  return res.status(200).json({
+    status: unblocked ? true : false,
+    userData: unblocked ? unblocked : "Không thể mở khóa người dùng" 
+  });
+});
+
+// GET WISHLIST 
+const getWishList = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const response = await User.findById(_id).populate("wishlist");
+  return res.status(200).json({
+    status: response ? true : false,
+    userData: response ? response : "Không thể lấy dữ liệu danh sách sản phẩm yêu thích"
+  });
+});
+
+
 module.exports = {
   register,
   login,
@@ -237,5 +363,11 @@ module.exports = {
   getUsers,
   deleteUser,
   updateUser,
-  updateUserByAdmin
+  updateUserByAdmin,
+  updateUserAddress,
+  updateCart,
+  addToWishList,
+  userBlocked,
+  unblockedUser,
+  getWishList
 };

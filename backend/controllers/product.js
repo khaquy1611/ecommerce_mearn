@@ -33,7 +33,7 @@ const getProducts = asyncHandler(async (req, res) => {
   const queries = { ...req.query };
   // Tách các trường đặc biệt ra khỏi query
   const excludeFields = ["limit", "sort", "page", "fields"];
-  excludeFields.forEach(el => delete queries[el])
+  excludeFields.forEach((el) => delete queries[el]);
   // Format lại các operators cho đúng cú pháp mongoose
   let queryString = JSON.stringify(queries);
   queryString = queryString.replace(
@@ -41,7 +41,7 @@ const getProducts = asyncHandler(async (req, res) => {
     (match) => `$${match}`
   );
   const forMatedQueries = JSON.parse(queryString);
-    
+
   /**
    * Filtering
    *
@@ -50,13 +50,13 @@ const getProducts = asyncHandler(async (req, res) => {
     forMatedQueries.title = { $regex: queries?.title, $options: "i" };
   }
   let queryCommand = Product.find(forMatedQueries);
-  
+
   //Sorting
   if (req?.query?.sort) {
-    const sortBy = req?.query?.sort.split(',').join(' ')
-    queryCommand = queryCommand.sort(sortBy)
+    const sortBy = req?.query?.sort.split(",").join(" ");
+    queryCommand = queryCommand.sort(sortBy);
   } else {
-    queryCommand = queryCommand.sort('-createdAt')
+    queryCommand = queryCommand.sort("-createdAt");
   }
 
   // Field Limiting
@@ -122,54 +122,73 @@ const deleteProduct = asyncHandler(async (req, res) => {
 
 // Phương thức đánh giá sản phẩm
 const ratings = asyncHandler(async (req, res) => {
-    const { _id } = req.user || {};
-    const { star, comment, pid } = req.body;
-    if (!star || !comment || !pid) throw new Error("Thiếu trường đầu vào");
-    const ratingsProducts = await Product.findById(pid);
-    // tìm xem sản phẩm này đã được đánh giá hay chưa
-    const alreadyRated = ratingsProducts?.ratings?.find(userId => userId?.postedBy?.toString() === _id);
-    console.log('alreadyRated', alreadyRated);
-    if (alreadyRated) {
-      // update star & comment
-      await Product.updateOne(
-        {
-          ratings: { $elemMatch: alreadyRated },
-        },
-        {
-          $set: { "ratings.$.star": star, "ratings.$.comment": comment },
-        },
-        {
-            new: true
-        }
-      );
-    } else {
-      // add star & comment
-      await Product.findByIdAndUpdate(
-        pid,
-        {
-          $push: { ratings: { star, comment, postedBy: _id } },
-        },
-        { new: true }
-      );
-    }
-    // Sum Ratings
-    const updatedProduct = await Product.findById(pid);
-    const ratingsCount = updatedProduct.ratings.length;
-    const sumRatings = updatedProduct.ratings.reduce(
-      (sum, el) => sum + +el.star,
-      0
+  const { _id } = req.user || {};
+  const { star, comment, pid } = req.body;
+  if (!star || !comment || !pid) throw new Error("Thiếu trường đầu vào");
+  const ratingsProducts = await Product.findById(pid);
+  // tìm xem sản phẩm này đã được đánh giá hay chưa
+  const alreadyRated = ratingsProducts?.ratings?.find(
+    (userId) => userId?.postedBy?.toString() === _id
+  );
+  console.log("alreadyRated", alreadyRated);
+  if (alreadyRated) {
+    // update star & comment
+    await Product.updateOne(
+      {
+        ratings: { $elemMatch: alreadyRated },
+      },
+      {
+        $set: { "ratings.$.star": star, "ratings.$.comment": comment },
+      },
+      {
+        new: true,
+      }
     );
-    updatedProduct.totalRatings =
-      Math.round(sumRatings * 10 / ratingsCount) / 10;
-  
-    await updatedProduct.save();
-  
-    return res.status(200).json({
-      status: true,
-      updatedProduct
-    });
+  } else {
+    // add star & comment
+    await Product.findByIdAndUpdate(
+      pid,
+      {
+        $push: { ratings: { star, comment, postedBy: _id } },
+      },
+      { new: true }
+    );
+  }
+  // Sum Ratings
+  const updatedProduct = await Product.findById(pid);
+  const ratingsCount = updatedProduct.ratings.length;
+  const sumRatings = updatedProduct.ratings.reduce(
+    (sum, el) => sum + +el.star,
+    0
+  );
+  updatedProduct.totalRatings =
+    Math.round((sumRatings * 10) / ratingsCount) / 10;
+
+  await updatedProduct.save();
+
+  return res.status(200).json({
+    status: true,
+    updatedProduct,
+  });
 });
-  
+
+// Phương thức upload ảnh vào Product
+const uploadImagesProduct = asyncHandler(async (req, res) => {
+  const { pid } = req.params;
+  if (!req.files) throw new Error("Bạn phải tải ảnh lên");
+  const response = await Product.findByIdAndUpdate(
+    pid,
+    { images: req.files.map((el) => el.path) },
+    { new: true }
+  );
+  return res.status(200).json({
+    status: response ? true : false,
+    msg: response
+      ? `Upload ảnh sản phẩm thành công`
+      : `Upload ảnh sản phẩm thất bại`,
+    updatedProduct: response ? response : null,
+  });
+});
 
 module.exports = {
   createProduct,
@@ -177,5 +196,6 @@ module.exports = {
   getProducts,
   updateProduct,
   deleteProduct,
-  ratings
+  ratings,
+  uploadImagesProduct,
 };
