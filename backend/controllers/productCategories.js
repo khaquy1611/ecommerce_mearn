@@ -71,7 +71,7 @@ const getProductCategories = asyncHandler(async (req, res) => {
       msg: productsCategories
         ? `Lấy dữ liệu toàn bộ danh mục sản phẩm thành công`
         : `Lấy dữ liệu toàn bộ danh mục sản phẩm thất bại`,
-      productData: productsCategories ? productsCategories : null,
+      productCategoriesData: productsCategories ? productsCategories : null,
       total: counts,
     });
 });
