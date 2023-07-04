@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import * as actions from "./categoriesActions";
-export const appSlice = createSlice({
-  name: "app",
+export const categoriesSlice = createSlice({
+  name: "categories",
   initialState: {
     categories: [],
     isLoading: false,
@@ -23,4 +23,4 @@ export const appSlice = createSlice({
   },
 });
 
-export default appSlice.reducer;
+export default categoriesSlice.reducer;
