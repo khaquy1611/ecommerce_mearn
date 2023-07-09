@@ -1,10 +1,8 @@
 import axios from "../axios";
 
-export const getProducts = (data) =>
+export const getProducts = (params) =>
   axios({
     url: `/product/`,
     method: `GET`,
-    params: {
-      sort: data?.sort || "",
-    },
+    params
   });

@@ -51,10 +51,10 @@ const BestSeller = () => {
   return (
     <>
       <div className="flex text-[20px] ml-[-32px]">
-        {tabs.map((el) => (
+        {tabs && tabs.map((el) => (
           <span
             key={el.id}
-            className={`font-bold px-8 capitalize border-r text-gray-400 ${
+            className={`font-bold px-8 uppercase border-r text-gray-400 ${
               activeTabs === el.id ? "text-gray-900" : ""
             }`}
             onClick={() => setActiveTabs(el.id)}
@@ -74,6 +74,10 @@ const BestSeller = () => {
               />
             ))}
         </Slider>
+      </div>
+      <div className="flex items-center gap-4 mt-4">
+       <img src="https://cdn.shopify.com/s/files/1/1903/4853/files/banner2-home2_2000x_crop_center.png?v=1613166657" alt="Banner1" className="flex-1 object-contain"/>
+       <img src="https://cdn.shopify.com/s/files/1/1903/4853/files/banner1-home2_2000x_crop_center.png?v=1613166657" alt="Banner2" className="flex-1 object-contain"/>
       </div>
     </>
   );
