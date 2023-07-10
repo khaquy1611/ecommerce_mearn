@@ -6,13 +6,18 @@ import Trending from "../assets/trending.png";
 import { renderStartFromNumber } from "../ultils/helper";
 import SelectOption from "./SelectOption";
 import icons from "../ultils/icon";
-const Product = ({ productData, isNew }) => {
+import { Link } from "react-router-dom";
+import path from "../ultils/path";
+
+// Link tới chi tiết sản phẩm
+const Product = ({ productData, isNew, pid }) => {
   const { AiFillEye, AiOutlineMenu, BsFillSuitHeartFill } = icons;
   const [isShowOption, setIsShowOption] = useState(false);
   return (
     <>
       <div className="w-full text-base border px-[10px]">
-        <div
+        <Link
+          to={`/${path.PRODUCT}/${pid}/${productData?.title}`}
           className="w-full border p-[15px] flex flex-col items-center"
           onMouseEnter={(e) => {
             e.stopPropagation();
@@ -44,14 +49,18 @@ const Product = ({ productData, isNew }) => {
               className={`absolute w-[100px] h-[35px] top-0 right-[0]  object-cover`}
             />
           </div>
-          <div className="flex flex-col gap-2 mt=[15px] items-start gap-1 w-full">
+          <div className="flex flex-col gap-2 mt=[15px] items-start w-full">
             <span className="flex h-4">
-              {renderStartFromNumber(productData.totalRatings)}
+              {renderStartFromNumber(productData?.totalRatings)?.map(
+                (el, index) => (
+                  <span key={index}>{el}</span>
+                )
+              )}
             </span>
             <span className="line-clamp-1">{productData?.title}</span>
             <span>{`${formatMoney(productData?.price)} VNĐ`}</span>
           </div>
-        </div>
+        </Link>
       </div>
     </>
   );
@@ -60,5 +69,6 @@ const Product = ({ productData, isNew }) => {
 Product.propTypes = {
   productData: PropTypes.object.isRequired,
   isNew: PropTypes.bool.isRequired,
+  pid: PropTypes.string
 };
 export default Product;

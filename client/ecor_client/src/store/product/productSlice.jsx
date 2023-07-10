@@ -5,20 +5,20 @@ console.log('actions', actions.getProducts);
 export const productsSlice = createSlice({
   name: "products",
   initialState: {
-    products: [],
+    newProducts: [],
     isLoading: false,
     errorMessage: "",
   },
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(actions.getProducts.pending, (state) => {
+    builder.addCase(actions.getProductsActions.pending, (state) => {
       state.isLoading = true;
     });
-    builder.addCase(actions.getProducts.fulfilled, (state, action) => {
+    builder.addCase(actions.getProductsActions.fulfilled, (state, action) => {
       state.isLoading = true;
-      state.products = action.payload;
+      state.newProducts = action.payload;
     });
-    builder.addCase(actions.getProducts.rejected, (state, action) => {
+    builder.addCase(actions.getProductsActions.rejected, (state, action) => {
       state.isLoading = false;
       state.errorMessage = action.payload.msg;
     });

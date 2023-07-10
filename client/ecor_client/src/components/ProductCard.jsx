@@ -14,7 +14,9 @@ const ProductCard = ({ thumb, title, price, totalRatings }) => {
             {title?.toLowerCase()}
           </span>
           <span className="flex h-4">
-            {renderStartFromNumber(totalRatings)}
+            {renderStartFromNumber(totalRatings, 14)?.map((el, index) => (
+              <span key={index}>{el}</span>
+            ))}
           </span>
           <span>{`${formatMoney(price)} VNĐ`}</span>
         </div>

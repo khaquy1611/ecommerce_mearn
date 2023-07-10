@@ -9,3 +9,6 @@ export { default as DealDailys } from "./DealDailys";
 export { default as CountDown } from "./CountDown";
 export { default as FeatureProduct } from "./FeatureProduct";
 export { default as ProductCard } from "./ProductCard";
+export { default as CustomSlider } from "./CustomSlider";
+export { default as TopHeader } from "./TopHeader";
+export { default as Footer } from "./Footer";
