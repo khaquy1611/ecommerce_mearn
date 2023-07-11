@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 const Navigation = () => {
   return (
-    <div className="w-main flex items-center h-[48px] py-2 border-y mb-6 text-sm">
+    <div className="w-main flex items-center mx-auto h-[48px] py-2 border-y mb-6 text-sm">
       {navigation.map((el) => (
         <NavLink
           className={({ isActive }) =>

@@ -6,7 +6,7 @@ const Public = () => {
       <TopHeader />
       <Header />
       <Navigation />
-      <div className="w-main">
+      <div className="w-main mx-auto">
         <Outlet />
       </div>
       <Footer />
