@@ -9,6 +9,8 @@ import {
   DetailProducts,
   Product,
   Blogs,
+  FinalRegister,
+  ResetPassWord
 } from "./pages/public";
 import path from "./ultils/path";
 import { getCategories } from "./store/categories/categoriesActions";
@@ -32,7 +34,9 @@ function App() {
             element={<DetailProducts />}
           ></Route>
           <Route path={path.BLOG} element={<Blogs />}></Route>
+          <Route path={path.RESET_PASSWORD} element={<ResetPassWord />}></Route>
         </Route>
+        <Route path={path.FINAL_REGISTER} element={<FinalRegister />}></Route>
         <Route path={path.LOGIN} element={<Login />}></Route>
       </Routes>
     </div>

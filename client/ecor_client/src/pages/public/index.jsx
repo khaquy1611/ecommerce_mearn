@@ -7,3 +7,5 @@ export { default as Blogs } from "./Blogs";
 export { default as Services } from "./Services";
 export { default as FAQS } from "./FAQS";
 export { default as DetailProducts } from "./DetailProducts";
+export { default as FinalRegister } from "./FinalRegister";
+export { default as ResetPassWord } from "./ResetPassWord";

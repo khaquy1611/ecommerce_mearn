@@ -4,11 +4,12 @@ const { verifyAccessToken, isAdmin } = require("../middlewares/verifyToken");
 
 router.put("/cart", [verifyAccessToken], ctrls.updateCart);
 router.post("/register", ctrls.register);
+router.get("/finalRegister/:token", ctrls.finalRegister);
 router.post("/login", ctrls.login);
 router.get("/current", verifyAccessToken, ctrls.getCurrentUser);
 router.post("/refreshToken", ctrls.refreshAcessToken);
 router.get("/logout", ctrls.logout);
-router.get("/forgotpassword", ctrls.forgotPassWord);
+router.post("/forgotpassword", ctrls.forgotPassWord);
 router.put("/resetpassword", ctrls.resetPassWord);
 router.get("/", [verifyAccessToken, isAdmin], ctrls.getUsers);
 router.delete("/", [verifyAccessToken, isAdmin], ctrls.deleteUser);

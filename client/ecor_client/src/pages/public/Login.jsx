@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import bg_login from "../../assets/bg_login.jpg";
 import { InputField, Button } from "../../components";
-import { userRegister, userLogin } from "../../api/user";
+import { userRegister, userLogin, userForgotPassWord } from "../../api/user";
 import Swal from "sweetalert2";
 import { register } from "../../store/users/UserSlice";
 import { useDispatch } from "react-redux";
@@ -19,6 +19,9 @@ const Login = () => {
   });
   const { email, password } = payload;
   const [isRegister, setRegister] = useState(false);
+  const [isShowModal, setIsShowModal] = useState(false);
+  const [isForgotPassWord, setIsForgotPassWord] = useState(false);
+  const [emailForgot, setEmailForgot] = useState("");
   const resetPayload = () => {
     setPayload({
       email: "",
@@ -28,6 +31,11 @@ const Login = () => {
       mobile: "",
     });
   };
+  const handleForgotPassWord = async () => {
+      const response = await userForgotPassWord({ email: emailForgot });
+      console.log('response', response);          
+  };
+
   const handleSubmit = useCallback(async () => {
     if (isRegister) {
       const response = await userRegister(payload);
@@ -51,12 +59,21 @@ const Login = () => {
         );
         navigate(`/${path.HOME}`);
       } else {
-        Swal.fire(`Oops!!`, response?.msg, "error");
+        Swal.fire(`Oops!!`, response?.mes, "error");
       }
     }
   }, [dispatch, email, isRegister, navigate, password, payload]);
   return (
     <div className="w-screen h-screen relative">
+    <div className="absolute top-0 left-0 bottom-0 right-0 bg-white z-50 py-8 flex flex-col items-center">
+      <div className="flex flex-col gap-4">
+      <label htmlFor="email">Enter your email</label>
+      <input type="text" id="email" className="w-[800px] pb-2 border-b outline-none placeholder:text-sm" name="email" onChange={(e) => setEmailForgot(e.target.value)} value={emailForgot} placeholder="Exp: email@gmail.com" />
+      <div className="flex items-center justify-end mt-4 w-full">
+      <Button name="Xác Nhận" handleOnClick={handleForgotPassWord}/>
+    </div>
+      </div>
+    </div>
       <img
         src={bg_login}
         alt="background_login"
@@ -101,7 +118,7 @@ const Login = () => {
           />
           <Button
             name={isRegister ? `Đăng Ký` : `Đăng Nhập`}
-            handleOnclick={handleSubmit}
+            handleOnClick={handleSubmit}
             fw
           />
           <div className="flex items-center justify-between my-2 w-full text-sm">

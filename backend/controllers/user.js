@@ -7,27 +7,57 @@ const {
 const jwt = require("jsonwebtoken");
 const sendMail = require("../ultils/sendMail");
 const crypto = require("crypto");
+const makeToken = require("uniqid");
 
-// phương thức đăng ký người dùng
+// Phương thức đăng ký qua gmail
 const register = asyncHandler(async (req, res) => {
-  const { email, password, firstName, lastName } = req.body;
-  if (!email || !password || !lastName || !firstName)
+  const { email, password, firstName, lastName, mobile } = req.body;
+  if (!email || !password || !lastName || !firstName || !mobile)
     return res.status(400).json({
       success: false,
       msg: `Thiếu trường đầu vào`,
     });
+  const token = makeToken();
+  res.cookie(
+    `dataRegister`,
+    { ...req.body, token },
+    { httpOnly: true, maxAge: 15 * 60 * 1000 }
+  );
+  const html = `Xin vui lòng click vào link dưới đây để kích hoạt email của bạn. Link này sẽ hết hạn sau 15 phút kể từ bây giờ. <a href=${process.env.URL_SERVER}/api/user/finalRegister/${token}>Click here</a>`;
   const user = await User.findOne({ email });
   if (user) {
     throw new Error(`Người dùng đã tồn tại trong hệ thống`);
   } else {
-    const newUser = await User.create(req.body);
+    await sendMail({ email, html, subject: `Hoàn tất đăng ký digital world` });
     return res.status(200).json({
-      success: newUser ? true : false,
-      msg: newUser
-        ? `Đăng ký người dùng thành công. Vui lòng đến trang đăng nhập~`
-        : "Đăng ký không thành công có gì đó bị lỗi",
+      success: true,
+      msg: `Vui lòng kiểm tra email để kích hoạt tài khoản của bạn`,
     });
   }
+});
+
+// Phương thức active email register
+const finalRegister = asyncHandler(async (req, res) => {
+  const cookies = req.cookies;
+  const { token } = req.params;
+  if (!cookies || cookies?.dataRegister?.token !== token) {
+    res.clearCookie('dataRegister');
+    res.redirect(`${process.env.CLIENT_APP_URL}/finalRegister/failed`);
+  }
+  const newUsers = await User.create({
+    email: cookies?.dataRegister?.email,
+    password: cookies?.dataRegister?.password,
+    firstName: cookies?.dataRegister?.firstName,
+    lastName: cookies?.dataRegister?.lastName,
+    mobile: cookies?.dataRegister?.mobile,
+  });
+  res.clearCookie('dataRegister');
+  if (newUsers) {
+    return res.redirect(`${process.env.CLIENT_APP_URL}/finalRegister/success`);
+  } else {
+    return res.redirect(`${process.env.CLIENT_APP_URL}/finalRegister/failed`);
+  }
+  
 });
 
 // Phương thức đăng nhập người dùng
@@ -135,18 +165,19 @@ const logout = asyncHandler(async (req, res) => {
 // Server check Token có giống với token đã gửi mail hay không và thay đổi pass
 // Phương thức lấy lại mật khẩu
 const forgotPassWord = asyncHandler(async (req, res) => {
-  const { email } = req.query;
+  const { email } = req.body;
   if (!email) throw new Error("Thiếu trường email");
   const user = await User.findOne({ email });
   if (!user) throw new Error("Không tìm thấy người dùng");
   const resetToken = user.createPasswordChangedToken();
   await user.save();
 
-  const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn.Link này sẽ hết hạn sau 15 phút kể từ bây giờ. <a href=${process.env.URL_SERVER}/api/user/resetpassword/${resetToken}>Click here</a>`;
+  const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn.Link này sẽ hết hạn sau 15 phút kể từ bây giờ. <a href=${process.env.CLIENT_APP_URL}/resetpassword/${resetToken}>Click here</a>`;
 
   const data = {
     email,
     html,
+    subject: `Lấy lại mật khẩu`,
   };
   const rs = await sendMail(data);
   return res.status(200).json({
@@ -179,52 +210,64 @@ const resetPassWord = asyncHandler(async (req, res) => {
   });
 });
 
-
 // phương thức lấy nhiều người dùng
 
 const getUsers = asyncHandler(async (req, res) => {
-  const response = await User.find().select('-refreshToken -password -role');
+  const response = await User.find().select("-refreshToken -password -role");
   return res.status(200).json({
-      success: response ? true : false,
-      msg: response ? `Lấy tất cả dữ liệu người dùng thành công` : `Lấy dữ liệ người dùng thất bại`,
-      users: response
+    success: response ? true : false,
+    msg: response
+      ? `Lấy tất cả dữ liệu người dùng thành công`
+      : `Lấy dữ liệ người dùng thất bại`,
+    users: response,
   });
 });
 
 // phương thức xóa người dùng
 const deleteUser = asyncHandler(async (req, res) => {
-  const { _id } = req.query
-  if (!_id) throw new Error('Thiếu trường đầu vào');
-  const response = await User.findByIdAndDelete(_id)
+  const { _id } = req.query;
+  if (!_id) throw new Error("Thiếu trường đầu vào");
+  const response = await User.findByIdAndDelete(_id);
   return res.status(200).json({
-      success: response ? true : false,
-      deletedUser: response ? `Người dùng có email ${response.email} đã bị xóa` : 'Không có người dùng nào bị xóa'
-  })
+    success: response ? true : false,
+    deletedUser: response
+      ? `Người dùng có email ${response.email} đã bị xóa`
+      : "Không có người dùng nào bị xóa",
+  });
 });
 
 // phương thức cập nhập người dùng
 const updateUser = asyncHandler(async (req, res) => {
-  const { _id } = req.user
-  if (!_id || Object.keys(req.body).length === 0) throw new Error('Thiếu trường đâò vào')
-  const response = await User.findByIdAndUpdate(_id, req.body, { new: true }).select('-password -role -refreshToken')
+  const { _id } = req.user;
+  if (!_id || Object.keys(req.body).length === 0)
+    throw new Error("Thiếu trường đâò vào");
+  const response = await User.findByIdAndUpdate(_id, req.body, {
+    new: true,
+  }).select("-password -role -refreshToken");
   return res.status(200).json({
-      success: response ? true : false,
-      msg: response ? `Cập nhập người dùng thành công` : `Cập nhập người dùng thất bại`,
-      updatedUser: response ? response : 'Có lỗi!!!'
+    success: response ? true : false,
+    msg: response
+      ? `Cập nhập người dùng thành công`
+      : `Cập nhập người dùng thất bại`,
+    updatedUser: response ? response : "Có lỗi!!!",
   });
 });
 // phương thức cập nhập người dùng bởi admin
 const updateUserByAdmin = asyncHandler(async (req, res) => {
-  const { uid } = req.params
-  if (Object.keys(req.body).length === 0) throw new Error('Thiếu trường đầu vào')
-  const response = await User.findByIdAndUpdate(uid, req.body, { new: true }).select('-password -role -refreshToken')
+  const { uid } = req.params;
+  if (Object.keys(req.body).length === 0)
+    throw new Error("Thiếu trường đầu vào");
+  const response = await User.findByIdAndUpdate(uid, req.body, {
+    new: true,
+  }).select("-password -role -refreshToken");
   return res.status(200).json({
-      success: response ? true : false,
-      msg: response ? `Admin cập nhập người dùng thành công` : `Admin cập nhập người dùng thất bại`,
-      updatedUser: response ? response : 'Có gì đó bị lỗi'
+    success: response ? true : false,
+    msg: response
+      ? `Admin cập nhập người dùng thành công`
+      : `Admin cập nhập người dùng thất bại`,
+    updatedUser: response ? response : "Có gì đó bị lỗi",
   });
 });
-
 
 // Phương thức cập nhập địa chỉ của người dùng
 const updateUserAddress = asyncHandler(async (req, res) => {
@@ -237,7 +280,9 @@ const updateUserAddress = asyncHandler(async (req, res) => {
   ).select("-password -role -refreshToken");
   return res.status(200).json({
     success: response ? true : false,
-    msg: response ? `Cập nhập địa chỉ của người dùng thành công` : `Cập nhập địa chỉ của người dùng thất bại`,
+    msg: response
+      ? `Cập nhập địa chỉ của người dùng thành công`
+      : `Cập nhập địa chỉ của người dùng thất bại`,
     updatedUser: response ? response : null,
   });
 });
@@ -290,9 +335,7 @@ const addToWishList = asyncHandler(async (req, res) => {
   const { pid } = req.body;
   if (!pid) throw new Error("Thiếu trường đầu vào");
   const user = User.findById(_id);
-  const alreadyAdded = user?.wishlist?.find(
-    (id) => id.toString() === pid
-  );
+  const alreadyAdded = user?.wishlist?.find((id) => id.toString() === pid);
   if (alreadyAdded) {
     const user = await User.findByIdAndUpdate(
       _id,
@@ -320,37 +363,45 @@ const addToWishList = asyncHandler(async (req, res) => {
   }
 });
 
-
 // Khóa người dùng
 const userBlocked = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const blockedUser = await User.findByIdAndUpdate(id, { isBlocked: true }, { new: true });
+  const blockedUser = await User.findByIdAndUpdate(
+    id,
+    { isBlocked: true },
+    { new: true }
+  );
   return res.status(200).json({
     status: blockedUser ? true : false,
-    userData: blockedUser ? blockedUser : "Không thể khóa người dùng"
-  })
-})
+    userData: blockedUser ? blockedUser : "Không thể khóa người dùng",
+  });
+});
 
 // Mở khóa người dùng
 const unblockedUser = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const unblocked = await User.findByIdAndUpdate(id , { isBlocked: false }, { new: true });
+  const unblocked = await User.findByIdAndUpdate(
+    id,
+    { isBlocked: false },
+    { new: true }
+  );
   return res.status(200).json({
     status: unblocked ? true : false,
-    userData: unblocked ? unblocked : "Không thể mở khóa người dùng" 
+    userData: unblocked ? unblocked : "Không thể mở khóa người dùng",
   });
 });
 
-// GET WISHLIST 
+// GET WISHLIST
 const getWishList = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const response = await User.findById(_id).populate("wishlist");
   return res.status(200).json({
     status: response ? true : false,
-    userData: response ? response : "Không thể lấy dữ liệu danh sách sản phẩm yêu thích"
+    userData: response
+      ? response
+      : "Không thể lấy dữ liệu danh sách sản phẩm yêu thích",
   });
 });
-
 
 module.exports = {
   register,
@@ -369,5 +420,6 @@ module.exports = {
   addToWishList,
   userBlocked,
   unblockedUser,
-  getWishList
+  getWishList,
+  finalRegister,
 };

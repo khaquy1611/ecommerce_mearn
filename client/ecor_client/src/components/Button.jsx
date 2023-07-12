@@ -3,7 +3,7 @@ import { memo } from "react";
 import PropTypes from "prop-types";
 const Button = ({
   name,
-  handleOnclick,
+  handleOnClick,
   style,
   iconsBefore,
   iconsAfter,
@@ -20,7 +20,7 @@ const Button = ({
             }`
       }
       onClick={() => {
-        handleOnclick && handleOnclick();
+        handleOnClick && handleOnClick();
       }}
     >
       {iconsBefore}
@@ -31,7 +31,7 @@ const Button = ({
 };
 Button.propTypes = {
   name: PropTypes.string,
-  handleOnclick: PropTypes.func,
+  handleOnClick: PropTypes.func,
   style: PropTypes.string,
   iconsBefore: PropTypes.element,
   iconsAfter: PropTypes.element,
