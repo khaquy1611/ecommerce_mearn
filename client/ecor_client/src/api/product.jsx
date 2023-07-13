@@ -4,5 +4,6 @@ export const getProducts = (params) =>
   axios({
     url: `/product/`,
     method: `GET`,
-    params
+    params,
+    withCredentials: true,
   });

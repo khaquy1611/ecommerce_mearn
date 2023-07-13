@@ -6,16 +6,23 @@ const initRoute = require("./routes");
 const cors = require("cors");
 
 const app = express();
+const port = process.env.PORT || 8888;
+// enable cors
 app.use(
   cors({
-    AccessControlAllowOrigin: "*",
-    origin: process.env.CLIENT_APP_URL,
-    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+    origin: true,
+    optionsSuccessStatus: 200,
     credentials: true,
   })
 );
-
-const port = process.env.PORT || 8888;
+app.options(
+  '*',
+  cors({
+    origin: true,
+    optionsSuccessStatus: 200,
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

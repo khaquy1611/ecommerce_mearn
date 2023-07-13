@@ -168,7 +168,7 @@ const forgotPassWord = asyncHandler(async (req, res) => {
   const { email } = req.body;
   if (!email) throw new Error("Thiếu trường email");
   const user = await User.findOne({ email });
-  if (!user) throw new Error("Không tìm thấy người dùng");
+  if (!user) throw new Error("Email không tồn tại trong hệ thống!");
   const resetToken = user.createPasswordChangedToken();
   await user.save();
 
@@ -181,8 +181,8 @@ const forgotPassWord = asyncHandler(async (req, res) => {
   };
   const rs = await sendMail(data);
   return res.status(200).json({
-    success: true,
-    rs,
+    success: rs.response?.includes('OK') ? true : false,
+    mes: rs.response?.includes('OK') ? `Hãy kiểm tra email của bạn` : `Đã có lỗi, hãy thử lại sau`
   });
 });
 
@@ -206,7 +206,7 @@ const resetPassWord = asyncHandler(async (req, res) => {
   await user.save();
   return res.status(200).json({
     success: user ? true : false,
-    mes: user ? "Lấy lại mật khẩu thành công" : "Có lỗi!!!!",
+    mes: user ? "Thay đổi mật khẩu thành công" : "Đã có lỗi, hãy thử lại sau",
   });
 });
 

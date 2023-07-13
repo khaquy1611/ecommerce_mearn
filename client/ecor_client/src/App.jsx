@@ -10,12 +10,14 @@ import {
   Product,
   Blogs,
   FinalRegister,
-  ResetPassWord
+  ResetPassWord,
 } from "./pages/public";
 import path from "./ultils/path";
 import { getCategories } from "./store/categories/categoriesActions";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import "react-toastify/dist/ReactToastify.css";
+import { Toast } from "././components";
 function App() {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -39,6 +41,7 @@ function App() {
         <Route path={path.FINAL_REGISTER} element={<FinalRegister />}></Route>
         <Route path={path.LOGIN} element={<Login />}></Route>
       </Routes>
+      <Toast />
     </div>
   );
 }

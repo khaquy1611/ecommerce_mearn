@@ -5,4 +5,5 @@ export const getCategories = () =>
   axios({
     url: "/product_categories/",
     method: "GET",
+    withCredentials: true,
   });
