@@ -8,6 +8,7 @@ import {
   AiOutlineStar,
   AiFillEye,
   AiOutlineMenu,
+  AiOutlineLogout
 } from "react-icons/ai";
 import { IoIosArrowForward } from "react-icons/io";
 import { HiEyeOff, HiEye } from "react-icons/hi";
@@ -24,6 +25,7 @@ const icons = {
   BsFillSuitHeartFill,
   IoIosArrowForward,
   HiEyeOff,
-  HiEye
+  HiEye,
+  AiOutlineLogout
 };
 export default icons;

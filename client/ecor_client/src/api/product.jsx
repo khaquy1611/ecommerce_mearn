@@ -7,3 +7,10 @@ export const getProducts = (params) =>
     params,
     withCredentials: true,
   });
+
+export const getProduct = (pid) =>
+  axios({
+    url: `/product/` + pid,
+    method: `GET`,
+    withCredentials: true,
+  });

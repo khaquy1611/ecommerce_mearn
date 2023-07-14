@@ -1,38 +1,48 @@
 import { createSlice } from "@reduxjs/toolkit";
-
+import * as actions from "./UserActions";
 export const authSlice = createSlice({
   name: "auth",
   initialState: {
     isLoggedIn: false,
     current: null,
     token: null,
+    isLoading: false,
+    msg: "",
   },
   reducers: {
     login: (state, action) => {
       (state.isLoggedIn = action.payload.isLoggedIn),
-        (state.current = action.payload.userData),
         (state.token = action.payload.token);
     },
+    logout: (state) => {
+      (state.isLoggedIn = false), (state.token = null);
+    },
   },
-  //   extraReducers: (builder) => {
-  //     builder.addCase(actions.registerUser.pending, (state) => {
-  //       state.loading = true;
-  //       state.error = null;
-  //     });
-  //     builder.addCase(actions.registerUser.fulfilled, (state, { payload, error }) => {
-  //       state.loading = false;
-  //       state.data = payload;
-  //       state.error = error.message;
-  //     });
-  //     builder.addCase(
-  //       actions.registerUser.rejected,
-  //       (state, { payload, error }) => {
-  //         state.loading = false;
-  //         state.data = payload
-  //         state.error = error.message;
-  //       }
-  //     );
-  //   },
+  extraReducers: (builder) => {
+    builder.addCase(actions.getCurrentUsers.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(actions.getCurrentUsers.fulfilled, (state, { payload }) => {
+      state.isLoading = false;
+      state.current = payload;
+    });
+    builder.addCase(actions.getCurrentUsers.rejected, (state) => {
+      state.isLoading = false;
+      state.current = null;
+    });
+
+    builder.addCase(actions.Logout.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(actions.Logout.fulfilled, (state, { payload }) => {
+      state.isLoading = false;
+      state.msg = payload;
+    });
+    builder.addCase(actions.Logout.rejected, (state, { error }) => {
+      state.isLoading = false;
+      state.msg = error;
+    });
+  },
 });
-export const { login } = authSlice.actions;
+export const { login, logout } = authSlice.actions;
 export default authSlice.reducer;

@@ -9,6 +9,14 @@ export const userRegister = (data) =>
     withCredentials: true,
   });
 
+export const userFinalRegister = (token = "") =>
+  axios({
+    url: `/user/finalRegister/` + token,
+    method: "PUT",
+    mode: "no-cors",
+    withCredentials: true,
+  });
+
 export const userLogin = (data) =>
   axios({
     url: `/user/login`,
@@ -39,4 +47,19 @@ export const userResetPassWord = (data) =>
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
+  });
+export const userGetCurrent = () =>
+  axios({
+    url: `/user/current`,
+    method: `GET`,
+    mode: "no-cors",
+    withCredentials: true,
+  });
+
+export const userLogout = () =>
+  axios({
+    url: `/user/logout`,
+    method: `GET`,
+    mode: "no-cors",
+    withCredentials: true,
   });

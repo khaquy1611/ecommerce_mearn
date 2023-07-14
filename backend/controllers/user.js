@@ -17,47 +17,51 @@ const register = asyncHandler(async (req, res) => {
       success: false,
       msg: `Thiếu trường đầu vào`,
     });
-  const token = makeToken();
-  res.cookie(
-    `dataRegister`,
-    { ...req.body, token },
-    { httpOnly: true, maxAge: 15 * 60 * 1000 }
-  );
-  const html = `Xin vui lòng click vào link dưới đây để kích hoạt email của bạn. Link này sẽ hết hạn sau 15 phút kể từ bây giờ. <a href=${process.env.URL_SERVER}/api/user/finalRegister/${token}>Click here</a>`;
   const user = await User.findOne({ email });
   if (user) {
-    throw new Error(`Người dùng đã tồn tại trong hệ thống`);
+    throw new Error(`Người dùng đã tồn tại.`);
   } else {
-    await sendMail({ email, html, subject: `Hoàn tất đăng ký digital world` });
-    return res.status(200).json({
+    const token = makeToken();
+    const emailEdited = btoa(email) + "@" + token;
+    const newUser = await User.create({
+      email: emailEdited,
+      password,
+      firstName,
+      lastName,
+      mobile,
+    });
+    setTimeout(async () => {
+      User.deleteOne({ email: emailEdited });
+    }, 30000);
+    if (newUser) {
+      const html = `<h2>Register code:</h2><br /><blockquote>${token}</blockquote>`;
+      await sendMail({
+        email,
+        html,
+        subject: `Hoàn tất đăng ký digital world`,
+      });
+    }
+    return res.json({
       success: true,
-      msg: `Vui lòng kiểm tra email để kích hoạt tài khoản của bạn`,
+      mes: `Vui lòng kiểm tra email của bạn để kích hoạt tài khoản.`,
     });
   }
 });
 
 // Phương thức active email register
 const finalRegister = asyncHandler(async (req, res) => {
-  const cookies = req.cookies;
   const { token } = req.params;
-  if (!cookies || cookies?.dataRegister?.token !== token) {
-    res.clearCookie('dataRegister');
-    res.redirect(`${process.env.CLIENT_APP_URL}/finalRegister/failed`);
+  const notActiveEmail = await User.findOne({ email: new RegExp(`${token}$`) });
+  if (notActiveEmail) {
+    notActiveEmail.email = atob(notActiveEmail.email.split("@")[0]);
+    notActiveEmail.save();
   }
-  const newUsers = await User.create({
-    email: cookies?.dataRegister?.email,
-    password: cookies?.dataRegister?.password,
-    firstName: cookies?.dataRegister?.firstName,
-    lastName: cookies?.dataRegister?.lastName,
-    mobile: cookies?.dataRegister?.mobile,
+  return res.status(200).json({
+    success: notActiveEmail ? true : false,
+    mes: notActiveEmail
+      ? `Đăng ký thành công. ~ Vui lòng đến trang đăng nhập`
+      : `Bị lỗi vui lòng thử lại sau.`,
   });
-  res.clearCookie('dataRegister');
-  if (newUsers) {
-    return res.redirect(`${process.env.CLIENT_APP_URL}/finalRegister/success`);
-  } else {
-    return res.redirect(`${process.env.CLIENT_APP_URL}/finalRegister/failed`);
-  }
-  
 });
 
 // Phương thức đăng nhập người dùng
@@ -125,7 +129,7 @@ const refreshAcessToken = asyncHandler(async (req, res) => {
   // Check token có hợp lệ hay không
   const result = await jwt.verify(cookie.refreshToken, process.env.JWT_SECRET);
   const response = await User.findOne({
-    _id: decode._id,
+    _id: result._id,
     refreshToken: cookie.refreshToken,
   });
   return res.status(200).json({
@@ -155,7 +159,7 @@ const logout = asyncHandler(async (req, res) => {
   res.clearCookie("refreshToken", { http: true, secure: true });
   return res.status(200).json({
     success: result ? true : false,
-    msg: result ? `Đăng xuất thành công` : `Đăng xuất thất bại. Có lỗi!!!`,
+    mes: result ? `Đăng xuất thành công` : `Đăng xuất thất bại. Có lỗi!!!`,
   });
 });
 
@@ -181,8 +185,10 @@ const forgotPassWord = asyncHandler(async (req, res) => {
   };
   const rs = await sendMail(data);
   return res.status(200).json({
-    success: rs.response?.includes('OK') ? true : false,
-    mes: rs.response?.includes('OK') ? `Hãy kiểm tra email của bạn` : `Đã có lỗi, hãy thử lại sau`
+    success: rs.response?.includes("OK") ? true : false,
+    mes: rs.response?.includes("OK")
+      ? `Hãy kiểm tra email của bạn`
+      : `Đã có lỗi, hãy thử lại sau`,
   });
 });
 
