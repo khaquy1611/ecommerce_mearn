@@ -6,7 +6,7 @@ const Public = () => {
       <TopHeader />
       <Header />
       <Navigation />
-      <div className="w-main mx-auto">
+      <div className="w-full flex flex-col items-center justify-center">
         <Outlet />
       </div>
       <Footer />
