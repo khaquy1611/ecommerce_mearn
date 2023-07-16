@@ -4,16 +4,17 @@ import { settings } from "../ultils/settings";
 import PropTypes from "prop-types";
 import { Product } from "../components";
 import Slider from "react-slick";
-const CustomSlider = ({ products, activeTabs }) => {
+const CustomSlider = ({ products, activeTabs, normal }) => {
   return (
-    <Slider {...settings}>
+    <Slider className="custom-slider" {...settings}>
       {products &&
-        products.map((el) => (
+        products?.map((el) => (
           <Product
             isNew={activeTabs === 1 ? false : true}
             pid={el._id}
             key={el._id}
             productData={el}
+            normal={normal}
           />
         ))}
     </Slider>
@@ -22,5 +23,6 @@ const CustomSlider = ({ products, activeTabs }) => {
 CustomSlider.propTypes = {
   products: PropTypes.array,
   activeTabs: PropTypes.number,
+  normal: PropTypes.bool,
 };
 export default memo(CustomSlider);

@@ -8,6 +8,10 @@ export default {
     "./components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    listStyleType: {
+      square: "square",
+      roman: "upper-roman",
+    },
     extend: {
       width: {
         main: "1220px",
@@ -65,7 +69,8 @@ export default {
         "slide-top":
           "slide-top 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;",
         "slide-top-sm": "slide-top-sm 0.2s linear both;",
-        "slide-right": "slide-right 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;",
+        "slide-right":
+          "slide-right 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;",
       },
     },
   },
@@ -74,6 +79,9 @@ export default {
   },
   plugins: [
     require("@tailwindcss/line-clamp"),
-    // ...
+    require("@tailwindcss/forms")({ // only generate global styles
+      strategy: 'class', // only generate classes
+    }),
   ],
+  mode: 'jit',
 };

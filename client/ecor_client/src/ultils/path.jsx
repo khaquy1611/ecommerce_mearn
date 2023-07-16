@@ -3,11 +3,11 @@ const path = {
   HOME: "",
   ALL: "*",
   LOGIN: "login",
-  PRODUCT: "product",
+  PRODUCT: ":category",
   BLOG: "blog",
   SERVICES: "our_services",
   FAQS: "faqs",
-  DETAIL_PRODUCTS_PID_TITLE: "product/:pid/:title",
+  DETAIL_PRODUCTS_CATEGORY_PID_TITLE: ":category/:pid/:title",
   FINAL_REGISTER: "finalRegister/:status",
   RESET_PASSWORD: "resetpassword/:token"
 };

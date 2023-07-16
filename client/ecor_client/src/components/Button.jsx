@@ -1,14 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { memo } from "react";
 import PropTypes from "prop-types";
-const Button = ({
-  name,
-  handleOnClick,
-  style,
-  iconsBefore,
-  iconsAfter,
-  fw,
-}) => {
+const Button = ({ children, handleOnClick, style, fw }) => {
   return (
     <button
       type="button"
@@ -23,18 +16,14 @@ const Button = ({
         handleOnClick && handleOnClick();
       }}
     >
-      {iconsBefore}
-      <span>{name}</span>
-      {iconsAfter}
+      {children}
     </button>
   );
 };
 Button.propTypes = {
-  name: PropTypes.string,
+  children: PropTypes.isReqired,
   handleOnClick: PropTypes.func,
   style: PropTypes.string,
-  iconsBefore: PropTypes.element,
-  iconsAfter: PropTypes.element,
   fw: PropTypes.bool,
 };
 export default memo(Button);

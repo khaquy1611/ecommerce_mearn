@@ -7,17 +7,18 @@ import { renderStartFromNumber } from "../ultils/helper";
 import SelectOption from "./SelectOption";
 import icons from "../ultils/icon";
 import { Link } from "react-router-dom";
-import path from "../ultils/path";
 
 // Link tới chi tiết sản phẩm
-const Product = ({ productData, isNew, pid }) => {
+const Product = ({ productData, isNew, pid, normal }) => {
   const { AiFillEye, AiOutlineMenu, BsFillSuitHeartFill } = icons;
   const [isShowOption, setIsShowOption] = useState(false);
   return (
     <>
       <div className="w-full text-base border px-[10px]">
         <Link
-          to={`/${path.PRODUCT}/${pid}/${productData?.title}`}
+          to={`/${productData?.category?.toLowerCase()}/${pid}/${
+            productData?.title
+          }`}
           className="w-full border p-[15px] flex flex-col items-center"
           onMouseEnter={(e) => {
             e.stopPropagation();
@@ -44,10 +45,12 @@ const Product = ({ productData, isNew, pid }) => {
               alt={productData.title}
               className="w-[274px] h-[274px]  object-cover"
             />
-            <img
-              src={isNew ? label : Trending}
-              className={`absolute w-[100px] h-[35px] top-0 right-[0]  object-cover`}
-            />
+            {!normal && (
+              <img
+                src={isNew ? label : Trending}
+                className={`absolute w-[100px] h-[35px] top-0 right-[0]  object-cover`}
+              />
+            )}
           </div>
           <div className="flex flex-col gap-2 mt=[15px] items-start w-full">
             <span className="flex h-4">
@@ -68,7 +71,8 @@ const Product = ({ productData, isNew, pid }) => {
 
 Product.propTypes = {
   productData: PropTypes.object.isRequired,
-  isNew: PropTypes.bool.isRequired,
-  pid: PropTypes.string
+  isNew: PropTypes.bool,
+  pid: PropTypes.string,
+  normal: PropTypes.bool,
 };
 export default Product;

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import * as apis from "../../api";
 export const getCurrentUsers = createAsyncThunk(

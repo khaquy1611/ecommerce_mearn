@@ -13,7 +13,6 @@ const Home = () => {
   const { IoIosArrowForward } = icons;
   const { newProducts } = useSelector((state) => state.productReducer);
   const { categories } = useSelector((state) => state.categoriesReducer);
-  console.log("categories", categories);
   return (
     <>
       <div className="flex w-main">

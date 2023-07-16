@@ -192,14 +192,14 @@ const Login = () => {
             />
             <div className="flex items-center justify-end mt-4 w-full gap-4">
               <Button
-                name="Xác Nhận"
                 style="px-4 py-2 rounded-md text-white bg-blue-500 text-semibold my-2"
                 handleOnClick={handleForgotPassWord}
-              />
-              <Button
-                name="Quay lại"
-                handleOnClick={() => setIsForgotPassWord(false)}
-              />
+              >
+                Xác nhận
+              </Button>
+              <Button handleOnClick={() => setIsForgotPassWord(false)}>
+                Quay lại
+              </Button>
             </div>
           </div>
         </div>
@@ -256,11 +256,9 @@ const Login = () => {
             invalidFields={invalidFields}
             setInvalidFields={setInvalidFields}
           />
-          <Button
-            name={isRegister ? `Đăng Ký` : `Đăng Nhập`}
-            handleOnClick={handleSubmit}
-            fw
-          />
+          <Button handleOnClick={handleSubmit} fw>
+            {isRegister ? `Đăng Ký` : `Đăng Nhập`}
+          </Button>
           <div className="flex items-center justify-between my-2 w-full text-sm">
             {!isRegister ? (
               <span
