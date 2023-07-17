@@ -79,9 +79,7 @@ export default {
   },
   plugins: [
     require("@tailwindcss/line-clamp"),
-    require("@tailwindcss/forms")({ // only generate global styles
-      strategy: 'class', // only generate classes
-    }),
+    require("@tailwindcss/forms"),
   ],
   mode: 'jit',
 };

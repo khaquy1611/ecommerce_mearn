@@ -41,7 +41,7 @@ const getProducts = asyncHandler(async (req, res) => {
     (match) => `$${match}`
   );
   const forMatedQueries = JSON.parse(queryString);
-
+  let colorQueriesObject = {};
   /**
    * Filtering
    *
@@ -53,9 +53,12 @@ const getProducts = asyncHandler(async (req, res) => {
     forMatedQueries.category = { $regex: queries?.category, $options: "i" };
   }
   if (queries?.color) {
-    forMatedQueries.color = { $regex: queries?.color, $options: "i" };
+    delete forMatedQueries.color;
+    const colorQuery = queries?.color.split(',').map(el => ({ color: { $regex: el, $options: 'i' }}));
+    colorQueriesObject = { $or: colorQuery };
   }
-  let queryCommand = Product.find(forMatedQueries);
+  let q = {...forMatedQueries, ...colorQueriesObject};
+  let queryCommand = Product.find(q);
 
   //Sorting
   if (req?.query?.sort) {
@@ -84,7 +87,7 @@ const getProducts = asyncHandler(async (req, res) => {
 
   // Execute query
   // Số lượng sp thỏa mãn điều kiện !== số lượng sp trả về 1 lần gọi API
-  const counts = await Product.find(forMatedQueries).countDocuments();
+  const counts = await Product.find(q).countDocuments();
   const products = await queryCommand;
   return res.status(200).json({
     success: products ? true : false,
