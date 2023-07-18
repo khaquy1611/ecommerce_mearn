@@ -26,6 +26,7 @@ const DetailProducts = () => {
   const [quantity, setQuantity] = useState(1);
   const [currentImage, setCurrentImage] = useState(null);
   const [relatedProduct, setRelatedProduct] = useState(null);
+  const [update, setUpdate] = useState(null);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchProductData = async () => {
     const response = await getProduct(pid);
@@ -53,6 +54,16 @@ const DetailProducts = () => {
     }
     window.scroll(0, 0);
   }, [pid]);
+
+  useEffect(() => {
+    if (pid) {
+      fetchProductData();
+    }
+  }, [update]);
+
+  const rerender = useCallback(() => {
+    setUpdate(!update);
+  }, []);
 
   const handleQuantity = useCallback(
     (number) => {
@@ -164,7 +175,13 @@ const DetailProducts = () => {
         </div>
       </div>
       <div className="w-main m-auto mt-8">
-        <ProductInfomation totalRatings={product?.totalRatings} totalCount={18} />
+        <ProductInfomation
+          rerender={rerender}
+          totalRatings={product?.totalRatings}
+          ratings={product?.ratings}
+          nameProduct={product?.title}
+          pid={product?._id}
+        />
       </div>
       <div className="w-main m-auto mt-8">
         <h3 className="text-[20px] font-semibold py-[15px] border-b-2 border-main">

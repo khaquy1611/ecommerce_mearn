@@ -1,4 +1,4 @@
-import "./App.css";
+import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import {
   Home,
@@ -14,17 +14,23 @@ import {
 } from "./pages/public";
 import path from "./ultils/path";
 import { getCategories } from "./store/categories/categoriesActions";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { Toast } from "./components";
+import { Modal } from "./components";
+import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
-import { Toast } from "././components";
+
 function App() {
   const dispatch = useDispatch();
+  const { isShowModal, modalShowChildren } = useSelector(
+    (state) => state.categoriesReducer
+  );
   useEffect(() => {
     dispatch(getCategories());
   }, [dispatch]);
   return (
-    <div className="min-h-screen font-main">
+    <div className="font-main relative">
+      {isShowModal && <Modal>{modalShowChildren}</Modal>}
       <Routes>
         <Route path={path.PUBLIC} element={<Public />}>
           <Route path={path.HOME} element={<Home />}></Route>

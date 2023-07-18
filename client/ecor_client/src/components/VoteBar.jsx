@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-refresh/only-export-components */
 import { memo, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -7,9 +8,8 @@ const VoteBar = ({ number, ratingsCount, ratingsTotal }) => {
   const { AiFillStar } = icons;
   const percentRef = useRef();
   useEffect(() => {
-    percentRef.current.style.cssText = `right:${
-      100 - Math.round((ratingsCount * 100) / ratingsTotal)
-    }%`;
+    const percent = Math.round((ratingsCount * 100) / ratingsTotal) || 0;
+    percentRef.current.style.cssText = `right:${100 - percent}%`;
   }, [ratingsCount, ratingsTotal]);
   return (
     <div className="flex items-center gap-2 text-sm text-gray-500">

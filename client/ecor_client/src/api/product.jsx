@@ -14,3 +14,11 @@ export const getProduct = (pid) =>
     method: `GET`,
     withCredentials: true,
   });
+export const productRatings = (data) =>
+  axios({
+    url: `/product/ratings`,
+    method: `PUT`,
+    mode: "no-cors",
+    data,
+    withCredentials: true,
+  });
