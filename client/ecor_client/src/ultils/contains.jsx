@@ -3,8 +3,8 @@ import icons from "./icon";
 const navigation = [
   {
     id: 1,
-    value: "PRODUCT",
-    path: `/${path.PRODUCT}`,
+    value: "HOME",
+    path: `/${path.HOME}`,
   },
   {
     id: 2,
@@ -20,11 +20,6 @@ const navigation = [
     id: 4,
     value: "FAQS",
     path: `/${path.FAQS}`,
-  },
-  {
-    id: 5,
-    value: "HOME",
-    path: `/${path.HOME}`,
   },
 ];
 const { BsShieldShaded, RiTruckFill, AiFillGift, BsReplyFill, FaTty } = icons;

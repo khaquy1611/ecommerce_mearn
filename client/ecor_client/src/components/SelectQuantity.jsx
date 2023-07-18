@@ -11,7 +11,7 @@ const SelectQuantity = ({ quantity, handleQuantity, handleChangeQuantity }) => {
         -
       </span>
       <input
-        className="py-2 text-center outline-none w-[30px]"
+        className="py-2 text-center outline-none w-[40px]"
         type="text"
         value={quantity}
         onChange={(e) => handleQuantity(e.target.value)}

@@ -21,7 +21,7 @@ const Footer = () => {
               name=""
               placeholder="Email address..."
               id=""
-              className="placeholder:italic placeholder:opacity-50 p-4 rounded-l-full flex-1 bg-[#F04646] outline-none text-gray-100 placeholder:text-sm placeholder:text-gray-100"
+              className="placeholder:italic placeholder:opacity-50 p-4 rounded-l-full flex-1 bg-[#F04646] text-gray-100 outline-none placeholder:text-sm placeholder:text-gray-100"
             />
           </div>
           <div className="h-[56px] w-[56px] bg-[#F04646] rounded-r-full flex items-center justify-center text-white">
