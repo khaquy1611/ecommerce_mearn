@@ -20,7 +20,7 @@ const InputSelect = ({ value, changeValue, options }) => {
   );
 };
 InputSelect.propTypes = {
-  value: PropTypes.value,
+  value: PropTypes.string,
   changeValue: PropTypes.func,
   options: PropTypes.array,
 };
