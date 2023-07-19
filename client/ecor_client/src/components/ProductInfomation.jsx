@@ -3,7 +3,7 @@
 import { useState, memo } from "react";
 import { productInfoTabs } from "../ultils/contains";
 import { renderStartFromNumber } from "../ultils/helper";
-import { VoteBar, Button, VoteOption } from "../components";
+import { VoteBar, Button, VoteOption, Comment } from "../components";
 import PropTypes from "prop-types";
 import { productRatings } from "../api";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,6 +11,7 @@ import { showModal } from "../store/categories/categoriesSlice";
 import { useNavigate } from "react-router-dom";
 import path from "../ultils/path";
 import Swal from "sweetalert2";
+
 const ProductInfomation = ({
   totalRatings,
   ratings,
@@ -28,7 +29,7 @@ const ProductInfomation = ({
       alert(`Vui lòng đánh giá xong mới submit`);
       return;
     }
-    await productRatings({ star: score, comment, pid });
+    await productRatings({ star: score, comment, pid, updatedAt: Date.now() });
     rerender();
     dispatch(
       showModal({
@@ -83,40 +84,56 @@ const ProductInfomation = ({
       <div className="w-full border p-4">
         {productInfoTabs.some((el) => el.id === activedTab) &&
           productInfoTabs.find((el) => el.id === activedTab)?.content}
-        {activedTab === 5 && (
-          <div className="flex p-4 flex-col">
-            <div className="flex">
-              <div className="flex-4 border flex flex-col border-red-500 items-center justify-center">
-                <span className="flex font-semibold text-3xl">{`${totalRatings}/5`}</span>
-                <span className="flex items-center gap-1">
-                  {renderStartFromNumber(ratings)?.map((el, index) => (
-                    <span key={index}>{el}</span>
-                  ))}
-                </span>
-                <span className="text-sm">{`${ratings?.length} reviewers and comments`}</span>
-              </div>
-              <div className="flex-6 border flex flex-col p-4 gap-2">
-                {Array.from(Array(5).keys())
-                  .reverse()
-                  .map((el) => (
-                    <VoteBar
-                      key={el}
-                      number={el + 1}
-                      ratingsTotal={ratings?.length}
-                      ratingsCount={
-                        ratings?.filter((element) => element.star === el + 1)
-                          ?.length
-                      }
-                    />
-                  ))}
-              </div>
+      </div>
+      <div className="flex flex-col w-main py-8">
+        <span className="p-2 px-4 cursor-pointer bg-white border border-b-0">
+          CUSTOMER REVIEWS
+        </span>
+        <div className="flex p-4 flex-col">
+          <div className="flex border">
+            <div className="flex-4 flex flex-col items-center justify-center">
+              <span className="flex font-semibold text-3xl">{`${Math.round(
+                totalRatings
+              )}/5`}</span>
+              <span className="flex items-center gap-1">
+                {renderStartFromNumber(totalRatings)?.map((el, index) => (
+                  <span key={index}>{el}</span>
+                ))}
+              </span>
+              <span className="text-sm">{`${ratings?.length} reviewers and comments`}</span>
             </div>
-            <div className="p-4 flex items-center justify-center text-sm flex-col gap-2">
-              <span>Do you want reviews this product?</span>
-              <Button handleOnClick={() => handleVoteNow()}>Vote now!</Button>
+            <div className="flex-6 flex flex-col p-4 gap-2">
+              {Array.from(Array(5).keys())
+                .reverse()
+                .map((el) => (
+                  <VoteBar
+                    key={el}
+                    number={el + 1}
+                    ratingsTotal={ratings?.length}
+                    ratingsCount={
+                      ratings?.filter((element) => element.star === el + 1)
+                        ?.length
+                    }
+                  />
+                ))}
             </div>
           </div>
-        )}
+          <div className="p-4 flex items-center justify-center text-sm flex-col gap-2">
+            <span>Do you want reviews this product?</span>
+            <Button handleOnClick={() => handleVoteNow()}>Vote now!</Button>
+          </div>
+          <div className="flex flex-col gap-4">
+            {ratings?.map((el) => (
+              <Comment
+                key={el._id}
+                star={el.star}
+                updatedAt={el.updatedAt}
+                comment={el.comment}
+                name={`${el.postedBy.firstName} ${el.postedBy.lastName}`}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -127,5 +144,6 @@ ProductInfomation.propTypes = {
   nameProduct: PropTypes.string,
   pid: PropTypes.string,
   rerender: PropTypes.func,
+  product: PropTypes.object,
 };
 export default memo(ProductInfomation);

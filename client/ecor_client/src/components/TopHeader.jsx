@@ -19,7 +19,12 @@ const TopHeader = () => {
     navigate(`/${path.LOGIN}`);
   };
   useEffect(() => {
-    if (isLoggedIn) dishpatch(getCurrentUsers());
+    const setTimeOutId = setTimeout(() => {
+      if (isLoggedIn) dishpatch(getCurrentUsers());
+    }, 300);
+    return () => {
+      clearTimeout(setTimeOutId);
+    };
   }, [dishpatch, isLoggedIn]);
   return (
     <>

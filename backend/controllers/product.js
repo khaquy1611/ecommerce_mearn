@@ -19,7 +19,13 @@ const createProduct = asyncHandler(async (req, res) => {
 // Phương thức lấy sản phẩm hiện tại
 const getProduct = asyncHandler(async (req, res) => {
   const { pid } = req.params;
-  const product = await Product.findById(pid);
+  const product = await Product.findById(pid).populate({
+    path: "ratings",
+    populate: {
+      path: "postedBy",
+      select: "firstName lastName avatar",
+    },
+  });
   return res.status(200).json({
     success: product ? true : false,
     msg: product
@@ -54,10 +60,12 @@ const getProducts = asyncHandler(async (req, res) => {
   }
   if (queries?.color) {
     delete forMatedQueries.color;
-    const colorQuery = queries?.color.split(',').map(el => ({ color: { $regex: el, $options: 'i' }}));
+    const colorQuery = queries?.color
+      .split(",")
+      .map((el) => ({ color: { $regex: el, $options: "i" } }));
     colorQueriesObject = { $or: colorQuery };
   }
-  let q = {...forMatedQueries, ...colorQueriesObject};
+  let q = { ...forMatedQueries, ...colorQueriesObject };
   let queryCommand = Product.find(q);
 
   //Sorting
@@ -132,14 +140,13 @@ const deleteProduct = asyncHandler(async (req, res) => {
 // Phương thức đánh giá sản phẩm
 const ratings = asyncHandler(async (req, res) => {
   const { _id } = req.user || {};
-  const { star, comment, pid } = req.body;
+  const { star, comment, pid, updatedAt } = req.body;
   if (!star || !comment || !pid) throw new Error("Thiếu trường đầu vào");
   const ratingsProducts = await Product.findById(pid);
   // tìm xem sản phẩm này đã được đánh giá hay chưa
   const alreadyRated = ratingsProducts?.ratings?.find(
     (userId) => userId?.postedBy?.toString() === _id
   );
-  console.log("alreadyRated", alreadyRated);
   if (alreadyRated) {
     // update star & comment
     await Product.updateOne(
@@ -147,7 +154,7 @@ const ratings = asyncHandler(async (req, res) => {
         ratings: { $elemMatch: alreadyRated },
       },
       {
-        $set: { "ratings.$.star": star, "ratings.$.comment": comment },
+        $set: { "ratings.$.star": star, "ratings.$.comment": comment, "ratings.$.updatedAt": updatedAt },
       },
       {
         new: true,
@@ -158,7 +165,7 @@ const ratings = asyncHandler(async (req, res) => {
     await Product.findByIdAndUpdate(
       pid,
       {
-        $push: { ratings: { star, comment, postedBy: _id } },
+        $push: { ratings: { star, comment, postedBy: _id, updatedAt } },
       },
       { new: true }
     );
