@@ -16,10 +16,13 @@ export const authSlice = createSlice({
     },
     logout: (state) => {
       (state.isLoggedIn = false), (state.token = null);
+      state.current = null;
+      state.isLoading = false;
+      state.msg = "";
     },
     clearMsg: (state) => {
-      state.msg = '';
-    }
+      state.msg = "";
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(actions.getCurrentUsers.pending, (state) => {
@@ -51,5 +54,5 @@ export const authSlice = createSlice({
     });
   },
 });
-export const { login, logout, clearMsg} = authSlice.actions;
+export const { login, logout, clearMsg } = authSlice.actions;
 export default authSlice.reducer;

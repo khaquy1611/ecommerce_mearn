@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import bg_login from "../../assets/bg_login.jpg";
-import { InputField, Button } from "../../components";
+import { InputField, Button, Loading } from "../../components";
 import {
   userRegister,
   userLogin,
@@ -15,6 +15,7 @@ import path from "../../ultils/path";
 import { toast } from "react-toastify";
 import { validate } from "../../ultils/helper";
 import { Link } from "react-router-dom";
+import { showModal } from "../../store/categories/categoriesSlice";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -64,13 +65,20 @@ const Login = () => {
       : validate({ email, password }, setInvalidFields);
     if (invalids == 0) {
       if (isRegister) {
+        dispatch(
+          showModal({ isShowModal: true, modalShowChildren: <Loading /> })
+        );
         const response = await userRegister(payload);
+        dispatch(showModal({ isShowModal: false, modalShowChildren: null }));
         if (response?.success) {
           setIssVerifyEmail(true);
         } else {
           Swal.fire(`Oops!!`, response?.mes, "error");
         }
       } else {
+        dispatch(
+          showModal({ isShowModal: true, modalShowChildren: <Loading /> })
+        );
         const response = await userLogin({ email, password });
         if (response?.success) {
           dispatch(
@@ -79,6 +87,9 @@ const Login = () => {
               token: response?.accessToken,
               userData: response?.userData,
             })
+          );
+          dispatch(
+            showModal({ isShowModal: false, modalShowChildren: <Loading /> })
           );
           navigate(`/${path.HOME}`);
         } else {
@@ -131,8 +142,8 @@ const Login = () => {
 
   useEffect(() => {
     if (timeLeft === 0) {
-      setTimeLeft(null);
       setIssVerifyEmail(false);
+      setTimeLeft(20);
     }
     // exit early when we reach 0
     if (!timeLeft) return;

@@ -112,7 +112,7 @@ const login = asyncHandler(async (req, res) => {
 // Phương thức lấy về thông tin của 1 người dùng
 const getCurrentUser = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const user = await User.findById(_id).select("-refreshToken -password -role");
+  const user = await User.findById(_id).select("-refreshToken -password");
   return res.status(200).json({
     success: user ? true : false,
     userData: user ? user : `Không tìm thấy thông tin người dùng`,

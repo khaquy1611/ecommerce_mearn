@@ -12,6 +12,15 @@ import {
   FinalRegister,
   ResetPassWord,
 } from "./pages/public";
+import {
+  AdminLayout,
+  ManageOrder,
+  ManageProduct,
+  ManageUser,
+  CreateProduct,
+  DashBoard,
+} from "./pages/admin";
+import { MemberLayout, Personal } from "./pages/member";
 import path from "./ultils/path";
 import { getCategories } from "./store/categories/categoriesActions";
 import { useDispatch, useSelector } from "react-redux";
@@ -44,8 +53,27 @@ function App() {
           <Route path={path.BLOG} element={<Blogs />}></Route>
           <Route path={path.RESET_PASSWORD} element={<ResetPassWord />}></Route>
         </Route>
+        {/* ADMIN SITE */}
+        <Route path={path.ADMIN} element={<AdminLayout />}>
+          <Route path={path.DASHBOARD} element={<DashBoard />}></Route>
+          <Route path={path.MANAGE_ORDER} element={<ManageOrder />}></Route>
+          <Route
+            path={path.MANAGE_PRODUCTS}
+            element={<ManageProduct />}
+          ></Route>
+          <Route path={path.MANAGE_USER} element={<ManageUser />}></Route>
+          <Route
+            path={path.CREATE_PRODUCTS}
+            element={<CreateProduct />}
+          ></Route>
+        </Route>
+        {/* MEMBER SITE */}
+        <Route path={path.MEMBER} element={<MemberLayout />}>
+          <Route path={path.PERSONAL} element={<Personal />}></Route>
+        </Route>
         <Route path={path.FINAL_REGISTER} element={<FinalRegister />}></Route>
         <Route path={path.LOGIN} element={<Login />}></Route>
+        <Route path={path.ALL} element={<Home />}></Route>
       </Routes>
       <Toast />
     </div>

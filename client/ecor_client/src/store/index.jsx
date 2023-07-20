@@ -25,7 +25,7 @@ const commonConfig = {
 
 const userConfig = {
   ...commonConfig,
-  whitelist: ["isLoggedIn", "token"],
+  whitelist: ["isLoggedIn", "token", "current"],
 };
 
 const debounceNotify = debounce((notify) => notify());
