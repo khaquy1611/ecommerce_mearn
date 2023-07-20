@@ -17,6 +17,9 @@ export const authSlice = createSlice({
     logout: (state) => {
       (state.isLoggedIn = false), (state.token = null);
     },
+    clearMsg: (state) => {
+      state.msg = '';
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(actions.getCurrentUsers.pending, (state) => {
@@ -25,10 +28,14 @@ export const authSlice = createSlice({
     builder.addCase(actions.getCurrentUsers.fulfilled, (state, { payload }) => {
       state.isLoading = false;
       state.current = payload;
+      state.isLoggedIn = true;
     });
     builder.addCase(actions.getCurrentUsers.rejected, (state) => {
       state.isLoading = false;
       state.current = null;
+      state.isLoggedIn = false;
+      state.token = null;
+      state.msg = `Phiên đăng nhập đã hết hạn hãy đăng nhập lại`;
     });
 
     builder.addCase(actions.Logout.pending, (state) => {
@@ -44,5 +51,5 @@ export const authSlice = createSlice({
     });
   },
 });
-export const { login, logout } = authSlice.actions;
+export const { login, logout, clearMsg} = authSlice.actions;
 export default authSlice.reducer;

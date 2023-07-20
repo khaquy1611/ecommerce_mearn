@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-const fileNames = ["src", "components", "assets", "axios", "hooks", "pages", "store", "ultils", "api"];
+const fileNames = ["src", "components", "assets" , "hooks", "pages", "store", "ultils", "api"];
 const filePaths = fileNames.reduce((acc, cur) => ({
   ...acc,
   [cur]: `/${cur === "src" ? cur : "src/" + cur}`,

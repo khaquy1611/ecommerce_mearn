@@ -4,8 +4,17 @@ import categoriesReducer from "./categories/categoriesSlice";
 import productReducer from "./product/productSlice";
 import authReducer from "./users/UserSlice";
 import logger from "redux-logger";
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
+import storage from "redux-persist/lib/storage";
 import { batchedSubscribe } from "redux-batched-subscribe";
 import { debounce } from "lodash";
 
@@ -26,7 +35,12 @@ export const store = configureStore({
     productReducer,
     user: persistReducer(userConfig, authReducer),
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoreActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }).concat(logger),
   enhancers: [batchedSubscribe(debounceNotify)],
 });
 
