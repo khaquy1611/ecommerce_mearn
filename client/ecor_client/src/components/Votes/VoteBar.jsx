@@ -2,7 +2,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { memo, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import icons from "../ultils/icon";
+import icons from "../../ultils/icon";
 
 const VoteBar = ({ number, ratingsCount, ratingsTotal }) => {
   const { AiFillStar } = icons;

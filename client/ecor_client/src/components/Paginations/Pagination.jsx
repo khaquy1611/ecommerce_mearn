@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import usePagination from "../hooks/usePagination";
+import usePagination from "../../hooks/usePagination";
 import PagiItems from "./PagiItems";
 import { useSearchParams } from "react-router-dom";
 

@@ -1,15 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-refresh/only-export-components */
 import { useState, memo } from "react";
-import { productInfoTabs } from "../ultils/contains";
-import { renderStartFromNumber } from "../ultils/helper";
-import { VoteBar, Button, VoteOption, Comment } from "../components";
+import { productInfoTabs } from "../../ultils/contains";
+import { renderStartFromNumber } from "../../ultils/helper";
+import { VoteBar, Button, VoteOption, Comment } from "../../components";
 import PropTypes from "prop-types";
-import { productRatings } from "../api";
+import { productRatings } from "../../api";
 import { useDispatch, useSelector } from "react-redux";
-import { showModal } from "../store/categories/categoriesSlice";
+import { showModal } from "../../store/categories/categoriesSlice";
 import { useNavigate } from "react-router-dom";
-import path from "../ultils/path";
+import path from "../../ultils/path";
 import Swal from "sweetalert2";
 
 const ProductInfomation = ({

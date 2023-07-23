@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { renderStartFromNumber, formatMoney } from "./../ultils/helper";
+import { renderStartFromNumber, formatMoney } from "../../ultils/helper";
 const ProductCard = ({ thumb, title, price, totalRatings }) => {
   return (
     <div className="w-1/3 flex-auto px-[10px] mb-[20px]">

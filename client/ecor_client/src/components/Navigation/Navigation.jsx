@@ -1,4 +1,4 @@
-import navigation from "../ultils/contains";
+import navigation from "../../ultils/contains";
 import { NavLink } from "react-router-dom";
 
 const Navigation = () => {

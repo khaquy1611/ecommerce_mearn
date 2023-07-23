@@ -173,4 +173,45 @@ export const voteOptions = [
     text: "Perfect",
   },
 ];
+const { AiOutlineDashboard, MdGroup, TbBrandProducthunt, RiBillLine } = icons;
+export const adminSidebar = [
+  {
+    id: 1,
+    type: 'SINGLE',
+    text: 'Dashboard',
+    path: `/${path.ADMIN}/${path.DASHBOARD}`,
+    icon: <AiOutlineDashboard size={20} />
+  },
+  {
+    id: 2,
+    type: 'SINGLE',
+    text: 'Quản lí người dùng',
+    path: `/${path.ADMIN}/${path.MANAGE_USER}`,
+    icon: <MdGroup size={20} />
+  },
+  {
+    id: 3,
+    type: 'PARENT',
+    text: 'Quản lí sản phẩm',
+    icon: <TbBrandProducthunt size={20} />,
+    subMenu: [
+      {
+        text: `Tạo sản phẩm`,
+        path: `/${path.ADMIN}/${path.CREATE_PRODUCTS}`,
+      },
+      {
+        text: `Quản lí sản phẩm`,
+        path: `/${path.ADMIN}/${path.MANAGE_PRODUCTS}`,
+      },
+    ]
+  },
+  {
+    id: 4,
+    type: 'SINGLE',
+    text: 'Quản lí đơn đặt hàng',
+    path: `/${path.ADMIN}/${path.MANAGE_ORDER}`,
+    icon: <RiBillLine size={20} />
+  },
+];
 export default navigation;
+

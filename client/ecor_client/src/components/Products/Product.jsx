@@ -1,11 +1,11 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import { formatMoney } from "../ultils/helper";
-import label from "../assets/new.png";
-import Trending from "../assets/trending.png";
-import { renderStartFromNumber } from "../ultils/helper";
-import SelectOption from "./SelectOption";
-import icons from "../ultils/icon";
+import { formatMoney } from "../../ultils/helper";
+import label from "../../assets/new.png";
+import Trending from "../../assets/trending.png";
+import { renderStartFromNumber } from "../../ultils/helper";
+import SelectOption from "../Selects/SelectOption";
+import icons from "../../ultils/icon";
 import { Link } from "react-router-dom";
 
 // Link tới chi tiết sản phẩm

@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { useState, memo } from "react";
 import PropTypes from "prop-types";
-import icons from "../ultils/icon";
+import icons from "../../ultils/icon";
 const InputField = ({
   value,
   setValue,

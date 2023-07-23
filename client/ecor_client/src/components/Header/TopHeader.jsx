@@ -1,11 +1,11 @@
 /* eslint-disable react-refresh/only-export-components */
 import { memo, useEffect } from "react";
 import { Link } from "react-router-dom";
-import path from "../ultils/path";
-import { getCurrentUsers } from "../store/users/UserActions";
+import path from "../../ultils/path";
+import { getCurrentUsers } from "../../store/users/UserActions";
 import { useDispatch, useSelector } from "react-redux";
-import icons from "../ultils/icon";
-import { logout, clearMsg } from "../store/users/UserSlice";
+import icons from "../../ultils/icon";
+import { logout, clearMsg } from "../../store/users/UserSlice";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 const TopHeader = () => {

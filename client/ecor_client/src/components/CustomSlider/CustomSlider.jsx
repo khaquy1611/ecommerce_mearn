@@ -1,8 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
 import { memo } from "react";
-import { settings } from "../ultils/settings";
+import { settings } from "../../ultils/settings";
 import PropTypes from "prop-types";
-import { Product } from "../components";
+import { Product } from "../../components";
 import Slider from "react-slick";
 const CustomSlider = ({ products, activeTabs, normal }) => {
   return (

@@ -1,10 +1,10 @@
 /* eslint-disable react-refresh/only-export-components */
 import { useState, useEffect, memo } from "react";
-import icons from "../ultils/icon";
-import { getProducts } from "../api/product";
-import { renderStartFromNumber, formatMoney } from "../ultils/helper";
-import CountDown from "./CountDown";
-import { secondsToHms } from "../ultils/helper";
+import icons from "../../ultils/icon";
+import { getProducts } from "../../api/product";
+import { renderStartFromNumber, formatMoney } from "../../ultils/helper";
+import CountDown from "../CountDown/CountDown";
+import { secondsToHms } from "../../ultils/helper";
 import moment from "moment/moment";
 let idInterval;
 const DealDailys = () => {

@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { memo } from "react";
 import { useDispatch } from "react-redux";
-import { showModal } from "../store/categories/categoriesSlice";
+import { showModal } from "../../store/categories/categoriesSlice";
 import PropTypes from "prop-types";
 const Modal = ({ children }) => {
   const dispatch = useDispatch();

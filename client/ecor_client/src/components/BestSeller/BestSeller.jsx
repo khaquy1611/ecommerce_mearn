@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { getProducts } from "../api/product";
-import { CustomSlider } from "../components";
-import { getProductsActions } from "../store/product/productActions";
+import { getProducts } from "../../api/product";
+import { CustomSlider } from "..";
+import { getProductsActions } from "../../store/product/productActions";
 import { useDispatch, useSelector } from "react-redux";
 // active tabs
 const tabs = [

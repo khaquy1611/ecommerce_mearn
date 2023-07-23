@@ -1,7 +1,7 @@
-import logo from "../assets/logo.png";
-import icons from "../ultils/icon";
+import logo from "../../assets/logo.png";
+import icons from "../../ultils/icon";
 import { Link } from "react-router-dom";
-import path from "../ultils/path";
+import path from "../../ultils/path";
 import { useSelector } from "react-redux";
 const Header = () => {
   const { current } = useSelector((state) => state.user);

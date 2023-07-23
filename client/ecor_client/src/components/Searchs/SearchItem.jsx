@@ -2,16 +2,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, memo, useEffect } from "react";
 import PropTypes from "prop-types";
-import icons from "../ultils/icon";
-import { colors } from "../ultils/contains";
+import icons from "../../ultils/icon";
+import { colors } from "../../ultils/contains";
 import {
   createSearchParams,
   useNavigate,
   useParams,
   useSearchParams,
 } from "react-router-dom";
-import { getProducts } from "../api";
-import useDebounce from "./../hooks/useDebounce";
+import { getProducts } from "../../api";
+import useDebounce from "../../hooks/useDebounce";
 import { toast } from "react-toastify";
 const SearchItem = ({
   name,

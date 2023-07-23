@@ -1,10 +1,10 @@
 /* eslint-disable react-refresh/only-export-components */
 import { useState, memo, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import logo from "../assets/logo.png";
-import { voteOptions } from "../ultils/contains";
-import { Button } from "../components";
-import icons from "../ultils/icon";
+import logo from "../../assets/logo.png";
+import { voteOptions } from "../../ultils/contains";
+import { Button } from "../../components";
+import icons from "../../ultils/icon";
 const VoteOption = ({ nameProduct, handleVoteOptions }) => {
   const [choosenScore, setChoosenScore] = useState(null);
   const [score, setScore] = useState(null);

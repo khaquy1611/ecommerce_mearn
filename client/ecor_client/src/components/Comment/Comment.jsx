@@ -1,8 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
 import { memo } from "react";
-import avartar from "../assets/avartar.png";
+import avartar from "../../assets/avartar.png";
 import moment from "moment";
-import { renderStartFromNumber } from "../ultils/helper";
+import { renderStartFromNumber } from "../../ultils/helper";
 import PropTypes from "prop-types";
 
 const Comment = ({

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import ProductCard from "./ProductCard";
-import { getProducts } from "../api/product";
+import ProductCard from "../Products/ProductCard";
+import { getProducts } from "../../api/product";
 
 const FeatureProduct = () => {
   const [products, setProducts] = useState(null);
