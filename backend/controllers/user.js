@@ -1,4 +1,6 @@
 const User = require("../models/users");
+const { PAGE } = require("../const");
+const { CURRENT_PAGE, LIMITS_PAGE } = require("../const/const");
 const asyncHandler = require("express-async-handler");
 const {
   generateAcessToken,
@@ -8,7 +10,7 @@ const jwt = require("jsonwebtoken");
 const sendMail = require("../ultils/sendMail");
 const crypto = require("crypto");
 const makeToken = require("uniqid");
-
+const { users } = require("../ultils/constant");
 // Phương thức đăng ký qua gmail
 const register = asyncHandler(async (req, res) => {
   const { email, password, firstName, lastName, mobile } = req.body;
@@ -219,13 +221,59 @@ const resetPassWord = asyncHandler(async (req, res) => {
 // phương thức lấy nhiều người dùng
 
 const getUsers = asyncHandler(async (req, res) => {
-  const response = await User.find().select("-refreshToken -password -role");
+  const queries = { ...req.query };
+  // Tách các trường đặc biệt ra khỏi query
+  const excludeFields = ["limit", "sort", "page", "fields"];
+  excludeFields.forEach((el) => delete queries[el]);
+  // Format lại các operators cho đúng cú pháp mongoose
+  let queryString = JSON.stringify(queries);
+  queryString = queryString.replace(
+    /\b(gte|gt|lte|lt)\b/g,
+    (match) => `$${match}`
+  );
+  const forMatedQueries = JSON.parse(queryString);
+  /**
+   * Filtering
+   *
+   */
+  if (queries?.name) {
+    forMatedQueries.name = { $regex: queries?.name, $options: "i" };
+  }
+  let queryCommand = User.find(forMatedQueries);
+
+  //Sorting
+  if (req?.query?.sort) {
+    const sortBy = req?.query?.sort.split(",").join(" ");
+    queryCommand = queryCommand.sort(sortBy);
+  } else {
+    queryCommand = queryCommand.sort("-createdAt");
+  }
+
+  // Field Limiting
+
+  if (req.query.fields) {
+    const fields = req.query.fields.split(",").join(" ");
+    queryCommand = queryCommand.select(fields);
+  } else {
+    queryCommand = queryCommand.select("-__v");
+  }
+
+  // Pagination
+  // limit: số object lấy về sau 1 lần gọi API
+  const page = +req.query.page * 1 || PAGE[CURRENT_PAGE];
+  const limit = +req.query.limit * 1 || PAGE[LIMITS_PAGE];
+  const skip = (page - 1) * limit;
+
+  queryCommand = await queryCommand.skip(skip).limit(limit);
+  const counts = await User.find(forMatedQueries).countDocuments();
+  const response = await User.find().select("-refreshToken -password");
   return res.status(200).json({
     success: response ? true : false,
     msg: response
       ? `Lấy tất cả dữ liệu người dùng thành công`
       : `Lấy dữ liệ người dùng thất bại`,
     users: response,
+    total: counts
   });
 });
 
@@ -409,6 +457,13 @@ const getWishList = asyncHandler(async (req, res) => {
   });
 });
 
+const createUsers = asyncHandler(async (req, res) => {
+  const response = await User.create(users);
+  return res.status(200).json({
+    success: response ? true : false,
+    users: response ? response : `Some thing went wrong`
+  })
+});
 module.exports = {
   register,
   login,
@@ -428,4 +483,5 @@ module.exports = {
   unblockedUser,
   getWishList,
   finalRegister,
+  createUsers
 };

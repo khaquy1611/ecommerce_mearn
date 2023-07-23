@@ -5,7 +5,7 @@ import { AdminSideBar } from "../../components";
 
 const AdminLayout = () => {
   const { isLoggedIn, current } = useSelector((state) => state.user);
-  if (!isLoggedIn || !current || current.role !== "admin")
+  if (!isLoggedIn || !current || current.role !== 0)
     return <Navigate to={`/${path.LOGIN}`} replace={true} />;
   return (
     <div className="flex w-full bg-gray-100 min-h-screen relative text-gray-900">

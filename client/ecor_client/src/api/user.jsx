@@ -63,3 +63,11 @@ export const userLogout = () =>
     mode: "no-cors",
     withCredentials: true,
   });
+export const getAllUsers = (params) =>
+  axios({
+    url: `/user/`,
+    method: `GET`,
+    mode: "no-cors",
+    withCredentials: true,
+    params,
+  });

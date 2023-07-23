@@ -4,6 +4,7 @@ const { verifyAccessToken, isAdmin } = require("../middlewares/verifyToken");
 
 router.put("/cart", [verifyAccessToken], ctrls.updateCart);
 router.post("/register", ctrls.register);
+router.post("/mock", ctrls.createUsers);
 router.put("/finalRegister/:token", ctrls.finalRegister);
 router.post("/login", ctrls.login);
 router.get("/current", verifyAccessToken, ctrls.getCurrentUser);

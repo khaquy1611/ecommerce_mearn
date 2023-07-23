@@ -60,7 +60,7 @@ const AdminSideBar = () => {
                       {el?.subMenu?.map((el) => (
                         <NavLink
                           to={el.path}
-                          key={el.id}
+                          key={el.text}
                           onClick={e => e.stopPropagation()}
                           className={({ isActive }) =>
                             clsx(
