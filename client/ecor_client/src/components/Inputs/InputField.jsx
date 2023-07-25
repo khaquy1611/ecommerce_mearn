@@ -2,20 +2,30 @@
 import { useState, memo } from "react";
 import PropTypes from "prop-types";
 import icons from "../../ultils/icon";
+import clsx from "clsx";
 const InputField = ({
   value,
   setValue,
   nameKey,
   type,
   invalidFields,
-  setInvalidFields
+  style,
+  setInvalidFields,
+  fullWidth,
+  placeholder,
+  isHideLabel
 }) => {
-  console.log('invalidFields', invalidFields);
   const [showPassWord, setShowPassWord] = useState(false);
   const { HiEyeOff, HiEye } = icons;
   return (
-    <div className="w-full flex flex-col gap-1 relative mb-2">
-      {value.trim() !== "" && (
+    <div
+      className={clsx(
+        "flex flex-col gap-1 relative mb-2",
+        fullWidth && "w-full",
+        style
+      )}
+    >
+      {!isHideLabel && value && value?.trim() !== "" && (
         <label
           className="text-[14px] z-10 text-gray-800 absolute top-0 left-[12px] block px-1 animate-slide-top-sm"
           htmlFor={nameKey}
@@ -28,31 +38,36 @@ const InputField = ({
         {!showPassWord && type === "password" ? (
           <input
             type="password"
-            className="px-4 py-2 rounded-sm border mt-2 w-full  placeholder:text=sm placeholder:text-italic"
-            placeholder={`${
-              nameKey?.slice(0, 1).toUpperCase() + nameKey?.slice(1)
-            }...`}
+            className="px-4 py-2 rounded-sm border mt-2 w-full placeholder:text=sm placeholder:text-italic"
+            placeholder={
+              placeholder ||
+              `${nameKey?.slice(0, 1).toUpperCase() + nameKey?.slice(1)}...`
+            }
             value={value}
             onChange={(e) =>
               setValue((prev) => ({ ...prev, [nameKey]: e.target.value }))
             }
             onFocus={() => {
-              setInvalidFields([])
+              setInvalidFields([]);
             }}
           />
         ) : (
           <input
             type="text"
-            className="px-4 py-2 rounded-sm border w-full mt-2 placeholder:text=sm placeholder:text-italic"
-            placeholder={`${
-              nameKey?.slice(0, 1).toUpperCase() + nameKey?.slice(1)
-            }...`}
+            className={clsx(
+              "px-4 py-2 rounded-sm border w-full mt-2 placeholder:text=sm placeholder:text-italic",
+              style
+            )}
+            placeholder={
+              placeholder ||
+              `${nameKey?.slice(0, 1).toUpperCase() + nameKey?.slice(1)}...`
+            }
             value={value}
             onChange={(e) =>
               setValue((prev) => ({ ...prev, [nameKey]: e.target.value }))
             }
             onFocus={() => {
-              setInvalidFields([])
+              setInvalidFields && setInvalidFields([]);
             }}
           />
         )}
@@ -80,6 +95,10 @@ InputField.propTypes = {
   type: PropTypes.string,
   nameKey: PropTypes.string,
   invalidFields: PropTypes.array,
-  setInvalidFields:  PropTypes.func,
+  setInvalidFields: PropTypes.func,
+  isHideLabel: PropTypes.bool,
+  style: PropTypes.string,
+  fullWidth: PropTypes.func,
+  placeholder: PropTypes.string,
 };
 export default memo(InputField);

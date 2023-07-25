@@ -24,7 +24,7 @@ const getRoles = asyncHandler(async (req, res) => {
       forMatedQueries.code = { $regex: queries?.code, $options: "i" };
     }
     let queryCommand = Role.find(forMatedQueries);
-  
+
     //Sorting
     if (req?.query?.sort) {
       const sortBy = req?.query?.sort.split(",").join(" ");

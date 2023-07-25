@@ -4,24 +4,21 @@ import clsx from "clsx";
 import {
   useSearchParams,
   useNavigate,
-  useParams,
   createSearchParams,
+  useLocation,
 } from "react-router-dom";
 
 const PagiItems = ({ children }) => {
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const { category } = useParams();
+  const location = useLocation();
   const handlePagination = () => {
-    let param = [];
-    for (let i of params.entries()) param.push(i);
-    const queries = {};
-    for (let i of param) queries[i[0]] = i[1];
+    const queries = Object.fromEntries([...params]);
     if (Number(children)) queries.page = children;
     navigate({
-      pathname: `/${category}`,
-      search: createSearchParams(queries).toString(),
-    });
+      pathname: location.pathname,
+      search: createSearchParams(queries).toString()
+    })
   };
   return (
     <button
@@ -41,6 +38,6 @@ const PagiItems = ({ children }) => {
   );
 };
 PagiItems.propTypes = {
-  children: PropTypes.element,
+  children: PropTypes.number,
 };
 export default PagiItems;

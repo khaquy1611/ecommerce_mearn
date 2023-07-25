@@ -17,7 +17,6 @@ const AdminSideBar = () => {
       setActived((prev) => prev.filter((el) => el !== tabsId));
     else setActived((prev) => [...prev, tabsId]);
   };
-  console.log(`actived`, actived);
   return (
     <div className="py-4 bg-white h-full cursor-pointer">
       <div className="flex flex-col justify-center items-center gap-2">

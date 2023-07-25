@@ -239,8 +239,15 @@ const getUsers = asyncHandler(async (req, res) => {
   if (queries?.name) {
     forMatedQueries.name = { $regex: queries?.name, $options: "i" };
   }
+  if (req?.query?.q) {
+    delete forMatedQueries.q;
+    forMatedQueries["$or"] = [
+      { firstName: { $regex: req.query.q, $options: "i" } },
+      { lastName: { $regex: req.query.q, $options: "i" } },
+      { email: { $regex: req.query.q, $options: "i" } },
+    ];
+  }
   let queryCommand = User.find(forMatedQueries);
-
   //Sorting
   if (req?.query?.sort) {
     const sortBy = req?.query?.sort.split(",").join(" ");
@@ -264,16 +271,18 @@ const getUsers = asyncHandler(async (req, res) => {
   const limit = +req.query.limit * 1 || PAGE[LIMITS_PAGE];
   const skip = (page - 1) * limit;
 
-  queryCommand = await queryCommand.skip(skip).limit(limit);
+  queryCommand = await queryCommand.select(
+    "-refreshToken -password"
+  ).skip(skip).limit(limit);
   const counts = await User.find(forMatedQueries).countDocuments();
-  const response = await User.find().select("-refreshToken -password");
+  const response = await queryCommand;
   return res.status(200).json({
     success: response ? true : false,
     msg: response
       ? `Lấy tất cả dữ liệu người dùng thành công`
       : `Lấy dữ liệ người dùng thất bại`,
     users: response,
-    total: counts
+    total: counts,
   });
 });
 
@@ -461,8 +470,8 @@ const createUsers = asyncHandler(async (req, res) => {
   const response = await User.create(users);
   return res.status(200).json({
     success: response ? true : false,
-    users: response ? response : `Some thing went wrong`
-  })
+    users: response ? response : `Some thing went wrong`,
+  });
 });
 module.exports = {
   register,
@@ -483,5 +492,5 @@ module.exports = {
   unblockedUser,
   getWishList,
   finalRegister,
-  createUsers
+  createUsers,
 };

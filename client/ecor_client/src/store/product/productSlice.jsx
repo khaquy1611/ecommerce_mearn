@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import * as actions from "./productActions";
 
-console.log('actions', actions.getProducts);
 export const productsSlice = createSlice({
   name: "products",
   initialState: {

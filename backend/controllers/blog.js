@@ -213,7 +213,6 @@ const getBlog = asyncHandler(async (req, res) => {
 const deleteBlog = asyncHandler(async (req, res) => {
   const { bid } = req.params;
   const blogs = await Blog.findByIdAndDelete(bid);
-  console.log('blogs', blogs);
   return res.status(200).json({
     success: blogs ? true : false,
     msg: blogs ? `Xóa Blog thành công` : `Xóa Blog thất bại`,
