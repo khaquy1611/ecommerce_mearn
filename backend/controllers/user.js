@@ -288,12 +288,11 @@ const getUsers = asyncHandler(async (req, res) => {
 
 // phương thức xóa người dùng
 const deleteUser = asyncHandler(async (req, res) => {
-  const { _id } = req.query;
-  if (!_id) throw new Error("Thiếu trường đầu vào");
-  const response = await User.findByIdAndDelete(_id);
+  const { uid } = req.params;
+  const response = await User.findByIdAndDelete(uid);
   return res.status(200).json({
     success: response ? true : false,
-    deletedUser: response
+    msg: response
       ? `Người dùng có email ${response.email} đã bị xóa`
       : "Không có người dùng nào bị xóa",
   });
@@ -318,8 +317,10 @@ const updateUser = asyncHandler(async (req, res) => {
 // phương thức cập nhập người dùng bởi admin
 const updateUserByAdmin = asyncHandler(async (req, res) => {
   const { uid } = req.params;
-  if (Object.keys(req.body).length === 0)
+  const { email , firstName, lastName, mobile } = req.body;
+  if (!email || !firstName || !lastName || !mobile) {
     throw new Error("Thiếu trường đầu vào");
+  }
   const response = await User.findByIdAndUpdate(uid, req.body, {
     new: true,
   }).select("-password -role -refreshToken");

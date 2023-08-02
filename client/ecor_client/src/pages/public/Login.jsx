@@ -258,6 +258,7 @@ const Login = () => {
             nameKey="email"
             invalidFields={invalidFields}
             setInvalidFields={setInvalidFields}
+            fullWidth
           />
           <InputField
             type="password"
@@ -266,6 +267,7 @@ const Login = () => {
             nameKey="password"
             invalidFields={invalidFields}
             setInvalidFields={setInvalidFields}
+            fullWidth
           />
           <Button handleOnClick={handleSubmit} fw>
             {isRegister ? `Đăng Ký` : `Đăng Nhập`}

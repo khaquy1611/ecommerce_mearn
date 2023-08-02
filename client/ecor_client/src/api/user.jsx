@@ -71,3 +71,20 @@ export const getAllUsers = (params) =>
     withCredentials: true,
     params,
   });
+  
+export const updateUserByAdmin = (uid, data) =>
+  axios({
+    url: `/user/` + uid,
+    method: `PUT`,
+    data,
+    mode: "no-cors",
+    withCredentials: true,
+  });
+
+export const deleteUserApi = (uid) =>
+  axios({
+    url: `/user/` + uid,
+    method: `DELETE`,
+    mode: "no-cors",
+    withCredentials: true,
+  });

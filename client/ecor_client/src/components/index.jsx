@@ -30,3 +30,5 @@ export { default as PagiItems } from "./Paginations/PagiItems";
 export { default as Pagination } from "./Paginations/Pagination";
 export { default as Loading } from "./Loading/Loading";
 export { default as AdminSideBar } from "./Sidebar/AdminSideBar";
+export { default as InputForm } from "./Inputs/InputForm";
+export { default as Select } from "./Inputs/Select";

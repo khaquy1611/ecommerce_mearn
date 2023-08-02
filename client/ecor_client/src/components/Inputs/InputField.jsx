@@ -3,6 +3,7 @@ import { useState, memo } from "react";
 import PropTypes from "prop-types";
 import icons from "../../ultils/icon";
 import clsx from "clsx";
+
 const InputField = ({
   value,
   setValue,
@@ -13,16 +14,15 @@ const InputField = ({
   setInvalidFields,
   fullWidth,
   placeholder,
-  isHideLabel
+  isHideLabel,
 }) => {
   const [showPassWord, setShowPassWord] = useState(false);
   const { HiEyeOff, HiEye } = icons;
   return (
     <div
       className={clsx(
-        "flex flex-col gap-1 relative mb-2",
-        fullWidth && "w-full",
-        style
+        `flex flex-col gap-1 relative mb-2`,
+        fullWidth && "w-full"
       )}
     >
       {!isHideLabel && value && value?.trim() !== "" && (
@@ -34,7 +34,7 @@ const InputField = ({
         </label>
       )}
 
-      <div className="w-full relative">
+      <div className="relative w-full">
         {!showPassWord && type === "password" ? (
           <input
             type="password"
@@ -55,7 +55,8 @@ const InputField = ({
           <input
             type="text"
             className={clsx(
-              "px-4 py-2 rounded-sm border w-full mt-2 placeholder:text=sm placeholder:text-italic",
+              "px-4 py-2 rounded-sm border mt-2 placeholder:text=sm placeholder:text-italic",
+              fullWidth && "w-full",
               style
             )}
             placeholder={
@@ -98,7 +99,7 @@ InputField.propTypes = {
   setInvalidFields: PropTypes.func,
   isHideLabel: PropTypes.bool,
   style: PropTypes.string,
-  fullWidth: PropTypes.func,
+  fullWidth: PropTypes.bool,
   placeholder: PropTypes.string,
 };
 export default memo(InputField);

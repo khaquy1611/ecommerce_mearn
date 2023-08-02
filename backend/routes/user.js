@@ -13,7 +13,7 @@ router.get("/logout", ctrls.logout);
 router.post("/forgotpassword", ctrls.forgotPassWord);
 router.put("/resetpassword", ctrls.resetPassWord);
 router.get("/", [verifyAccessToken, isAdmin], ctrls.getUsers);
-router.delete("/", [verifyAccessToken, isAdmin], ctrls.deleteUser);
+router.delete("/:uid", [verifyAccessToken, isAdmin], ctrls.deleteUser);
 router.put("/current", [verifyAccessToken], ctrls.updateUser);
 router.put("/:uid", [verifyAccessToken, isAdmin], ctrls.updateUserByAdmin)
 router.put("/block-user/:id", [verifyAccessToken, isAdmin], ctrls.userBlocked);
