@@ -22,3 +22,11 @@ export const productRatings = (data) =>
     data,
     withCredentials: true,
   });
+export const createProduct = (data) =>
+axios({
+  url: `/product/`,
+  method: `POST`,
+  mode: "no-cors",
+  data,
+  withCredentials: true,
+});

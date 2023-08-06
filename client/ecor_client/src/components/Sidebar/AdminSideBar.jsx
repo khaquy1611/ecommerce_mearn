@@ -2,7 +2,7 @@
 import { memo, Fragment, useState } from "react";
 import logo from "../../assets/logo.png";
 import { adminSidebar } from "../../ultils/contains";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { clsx } from "clsx";
 import { AiOutlineCaretDown, AiOutlineCaretRight } from "react-icons/ai";
 const activeStyle =
@@ -19,10 +19,10 @@ const AdminSideBar = () => {
   };
   return (
     <div className="py-4 bg-white h-full cursor-pointer">
-      <div className="flex flex-col justify-center items-center gap-2">
+      <Link to={`/`} className="flex flex-col justify-center items-center gap-2">
         <img src={logo} alt="logo" className="w-[200px] object-contain" />
         <span>Admin Workspace</span>
-      </div>
+      </Link>
       <div>
         {adminSidebar &&
           adminSidebar.map((el) => (

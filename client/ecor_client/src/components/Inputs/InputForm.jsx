@@ -12,12 +12,12 @@ const InputForm = ({
   type = "text",
   placeholder,
   fullWidth,
-  defaultValue
+  defaultValue,
+  style
 }) => {
-  console.log(`errors`, errors);
   return (
-    <div className="flex flex-col h-[70px] gap-2">
-      <label htmlFor={id}>{label}</label>
+    <div className={clsx("flex flex-col h-[70px] gap-2", style)}>
+      {label && <label htmlFor={id}>{label}</label> }
       <input
         type={type}
         id={id}
@@ -41,7 +41,8 @@ InputForm.propTypes = {
   type: PropTypes.string,
   placeholder: PropTypes.string,
   fullWidth: PropTypes.bool,
-  defaultValue: PropTypes.string
+  defaultValue: PropTypes.string,
+  style: PropTypes.string
 };
 // eslint-disable-next-line react-refresh/only-export-components
 export default memo(InputForm);

@@ -81,8 +81,18 @@ export const validate = (payload, setInvalidFields) => {
   return isvalids;
 };
 
-export const formatPrice = number => Math.round(number / 1000) * 100;
+export const formatPrice = (number) => Math.round(number / 1000) * 100;
 export const generateRange = (start, end) => {
   const length = end + 1 - start;
   return Array.from({ length }, (_, idx) => idx + start);
+};
+export function getBase64(file) {
+  if (!file) return '';
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
 }
+

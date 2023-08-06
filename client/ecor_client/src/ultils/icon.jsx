@@ -16,6 +16,7 @@ import {
 import { IoIosArrowForward } from "react-icons/io";
 import { HiEyeOff, HiEye } from "react-icons/hi";
 import { TbBrandProducthunt } from "react-icons/tb";
+import { GrClose } from "react-icons/gr";
 const icons = {
   RiPhoneFill,
   MdEmail,
@@ -40,6 +41,7 @@ const icons = {
   AiOutlineDashboard,
   MdGroup,
   TbBrandProducthunt,
-  RiBillLine
+  RiBillLine,
+  GrClose
 };
 export default icons;

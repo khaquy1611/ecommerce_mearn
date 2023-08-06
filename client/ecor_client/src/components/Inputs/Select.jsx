@@ -9,16 +9,18 @@ const Select = ({
   errors,
   id,
   validate,
+  disable = false,
   style,
   fullWidth,
   defaultValue = '',
 }) => {
   return (
-    <div className="flex flex-col gap-2">
+    <div className={clsx("flex flex-col gap-2", style)}>
       {label && <label htmlFor={id}>{label}</label>}
       <select
+        disabled={disable}
         defaultValue={defaultValue}
-        className={clsx("form-select", fullWidth && "w-full", style)}
+        className={clsx("form-select cursor-pointer max-h-[42px]", fullWidth && "w-full", style, disable && 'bg-slate-400')}
         id={id}
         {...register(id, validate)}
       >
@@ -42,8 +44,9 @@ Select.propTypes = {
   errors: PropTypes.object,
   id: PropTypes.string,
   validate: PropTypes.object,
-  style: PropTypes.object,
+  style: PropTypes.string,
   fullWidth: PropTypes.bool,
   defaultValue: PropTypes.string,
+  disable: PropTypes.bool
 };
 export default memo(Select);

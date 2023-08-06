@@ -19,6 +19,7 @@ import {
   renderStartFromNumber,
 } from "../../ultils/helper";
 import { productExtraInfomation } from "../../ultils/contains";
+import DOMPurify from 'dompurify';
 
 const DetailProducts = () => {
   const { pid, title, category } = useParams();
@@ -144,11 +145,12 @@ const DetailProducts = () => {
             <span className="text-main">{`(Đã bán: ${product.sold} cái)`}</span>
           </div>
           <ul className="list-square text-sm text-gray-500 pl-4">
-            {product.description?.map((el) => (
+          {product.description?.length > 1 && product.description?.map((el) => (
               <li className="leading-6" key={el}>
                 {el}
               </li>
             ))}
+            {product.description?.length === 1 && <div className="text-sm justify-center" dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(product?.description[0]) }}></div>}
           </ul>
           <div className="flex flex-col gap-8">
             <div className="flex items-center gap-4">
