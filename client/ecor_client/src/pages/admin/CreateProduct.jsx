@@ -1,16 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useCallback, Fragment } from "react";
-import { InputForm, Select, Button, MarkDownEditor } from "../../components";
+import { InputForm, Select, Button, MarkDownEditor, Loading } from "../../components";
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch} from "react-redux";
 import { getBase64, validate } from "../../ultils/helper";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import icons from "../../ultils/icon";
 import { createProduct } from "../../api";
+import { showModal } from "../../store/categories/categoriesSlice";
+
 const CreateProduct = () => {
   const { GrClose } = icons;
   const { categories } = useSelector((state) => state.categoriesReducer);
+  const dispatch = useDispatch();
   const {
     register,
     formState: { errors },
@@ -39,15 +42,25 @@ const CreateProduct = () => {
         for (let i of Object.entries(finalPayload)) {
           formData.append(i[0], i[1]);
         }
-        if (finalPayload.thumb) { formData.append('thumb', finalPayload.thumb[0]); }
-        if (finalPayload.images) {
-          for (let image of finalPayload.images) formData.append('images', image);
+        if (finalPayload.thumb) {
+          formData.append("thumb", finalPayload.thumb[0]);
         }
+        if (finalPayload.images) {
+          for (let image of finalPayload.images)
+            formData.append("images", image);
+        }
+        dispatch(showModal({ isShowModal: true , modalChildren: <Loading />}));
         const response = await createProduct(formData);
+        dispatch(showModal({ isShowModal: false , modalChildren: null}));
         if (response.success) {
-          toast.success(`Tạo sản phẩm mới thành công`,  { style: { color: "#000" } })
-        }else {
-          toast.error(`Tạo sản phẩm mới thất bại`, { style: { color: "#000" } });
+          toast.success(response.msg, { style: { color: "#000" } });
+          reset();
+          setPreviews({
+            thumb: "",
+            images: [],
+          });
+        } else {
+          toast.error(response.msg, { style: { color: "#000" } });
         }
       }
     }
@@ -70,7 +83,7 @@ const CreateProduct = () => {
         return;
       }
       const base64 = await getBase64(file);
-      imagesPreviews.push({ name: file.name , path: base64 });
+      imagesPreviews.push({ name: file.name, path: base64 });
     }
     if (imagesPreviews.length > 0) {
       setPreviews((prev) => ({ ...prev, images: imagesPreviews }));
@@ -82,13 +95,13 @@ const CreateProduct = () => {
   const handleDeletePreviewsImages = (imageName) => {
     const files = [...watch("images")];
     reset({
-      images: files?.filter((el) => el.name !== imageName)
+      images: files?.filter((el) => el.name !== imageName),
     });
     if (previews.images.some((el) => el.name === imageName))
-    setPreviews((prev) => ({
-      ...prev,
-      images: previews.images.filter((el) => el.name !== imageName),
-    }));
+      setPreviews((prev) => ({
+        ...prev,
+        images: previews.images.filter((el) => el.name !== imageName),
+      }));
   };
   useEffect(() => {
     handlePreviewsThumb(watch("thumb")[0]);

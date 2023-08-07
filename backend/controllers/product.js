@@ -70,8 +70,19 @@ const getProducts = asyncHandler(async (req, res) => {
       .map((el) => ({ color: { $regex: el, $options: "i" } }));
     colorQueriesObject = { $or: colorQuery };
   }
-  let q = { ...forMatedQueries, ...colorQueriesObject };
-  let queryCommand = Product.find(q);
+  let queryObject = {};
+  if (queries?.q) {
+    delete forMatedQueries.q
+    queryObject = { $or: [
+      { color: { $regex: queries?.q, $options: 'i'}},
+      { title: { $regex: queries?.q, $options: 'i'}},
+      { category: { $regex: queries?.q, $options: 'i'}},
+      { brand: { $regex: queries?.q, $options: 'i'}},
+      { description: { $regex: queries?.q, $options: 'i'}},
+    ]};
+  }
+  let qr = { ...forMatedQueries, ...colorQueriesObject, ...queryObject };
+  let queryCommand = Product.find(qr);
 
   //Sorting
   if (req?.query?.sort) {
@@ -100,7 +111,7 @@ const getProducts = asyncHandler(async (req, res) => {
 
   // Execute query
   // Số lượng sp thỏa mãn điều kiện !== số lượng sp trả về 1 lần gọi API
-  const counts = await Product.find(q).countDocuments();
+  const counts = await Product.find(qr).countDocuments();
   const products = await queryCommand;
   return res.status(200).json({
     success: products ? true : false,
