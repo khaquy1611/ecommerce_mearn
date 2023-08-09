@@ -2,7 +2,7 @@
 import { memo } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import PropTypes from "prop-types";
-const MarkDownEditor = ({ label, value, changeValue, name, inValidFileds, setInvalidFields}) => {
+const MarkDownEditor = ({ label, value, changeValue, name, inValidFileds, setInvalidFields }) => {
   return (
     <div className="flex flex-col">
     <span>{label}</span>
@@ -26,7 +26,9 @@ const MarkDownEditor = ({ label, value, changeValue, name, inValidFileds, setInv
             "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
         }}
         onChange={(e) => changeValue(prev => ({...prev, [name]: e.target.getContent()}))}
-        onFocus={() => setInvalidFields && setInvalidFields([])}
+        onFocus={() => {
+        setInvalidFields && setInvalidFields([])
+        }}
       />
       {inValidFileds?.some(el => el.name === name) 
       &&
@@ -43,6 +45,6 @@ MarkDownEditor.propTypes = {
     name: PropTypes.string,
     value: PropTypes.string,
     inValidFileds: PropTypes.array,
-    setInvalidFields: PropTypes.func
+    setInvalidFields: PropTypes.func,
 }
 export default memo(MarkDownEditor);

@@ -1,18 +1,22 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useCallback, Fragment, useEffect} from "react";
-import { InputForm, Select, Button, MarkDownEditor, Loading } from "../../components";
+/* eslint-disable react-refresh/only-export-components */
+import { memo, useState, useEffect, useCallback, Fragment } from "react";
+import PropTypes from "prop-types";
+import {
+  InputForm,
+  Select,
+  Button,
+  MarkDownEditor,
+  Loading,
+} from "../../components";
 import { useForm } from "react-hook-form";
-import { useSelector, useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getBase64, validate } from "../../ultils/helper";
 import { toast } from "react-toastify";
 import icons from "../../ultils/icon";
-import { createProduct } from "../../api";
 import { showModal } from "../../store/categories/categoriesSlice";
+import { updateProduct } from "../../api";
 
-const CreateProduct = () => {
-  const { GrClose } = icons;
-  const { categories } = useSelector((state) => state.categoriesReducer);
-  const dispatch = useDispatch();
+const UpdateProducts = ({ editProduct, render, setEditProduct }) => {
   const {
     register,
     formState: { errors },
@@ -20,6 +24,9 @@ const CreateProduct = () => {
     handleSubmit,
     watch,
   } = useForm();
+  const { GrClose } = icons;
+  const { categories } = useSelector((state) => state.categoriesReducer);
+  const dispatch = useDispatch();
   const [payload, setPayload] = useState({
     description: "",
   });
@@ -28,46 +35,11 @@ const CreateProduct = () => {
     images: [],
   });
   const [inValidFileds, setInvalidFields] = useState([]);
-  const handleCreateProduct = async (data, e) => {
-    e.preventDefault();
-    const invalids = validate(payload, setInvalidFields);
-    if (invalids == 0) {
-      if (data.category) {
-        data.category = categories?.find(
-          (el) => el._id === data.category
-        )?.title;
-        const finalPayload = { ...data, ...payload };
-        const formData = new FormData();
-        for (let i of Object.entries(finalPayload)) {
-          formData.append(i[0], i[1]);
-        }
-        if (finalPayload.thumb) {
-          formData.append("thumb", finalPayload.thumb[0]);
-        }
-        if (finalPayload.images) {
-          for (let image of finalPayload.images)
-            formData.append("images", image);
-        }
-        dispatch(showModal({ isShowModal: true , modalChildren: <Loading />}));
-        const response = await createProduct(formData);
-        dispatch(showModal({ isShowModal: false , modalChildren: null}));
-        if (response.success) {
-          toast.success(response.msg, { style: { color: "#000" } });
-          reset();
-          setPreviews({
-            thumb: "",
-            images: [],
-          });
-        } else {
-          toast.error(response.msg, { style: { color: "#000" } });
-        }
-      }
-    }
-  };
   const changeValue = useCallback(
     (e) => {
       setPayload(e);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [payload]
   );
   const handlePreviewsThumb = async (file = "") => {
@@ -82,7 +54,7 @@ const CreateProduct = () => {
         return;
       }
       const base64 = await getBase64(file);
-      imagesPreviews.push({ name: file.name, path: base64 });
+      imagesPreviews.push(base64);
     }
     if (imagesPreviews.length > 0) {
       setPreviews((prev) => ({ ...prev, images: imagesPreviews }));
@@ -91,32 +63,111 @@ const CreateProduct = () => {
   const handleDeletePreviewsThumb = () => {
     setPreviews((prev) => ({ ...prev, thumb: "" }));
   };
-  const handleDeletePreviewsImages = (imageName) => {
+  const handleDeletePreviewsImages = (image) => {
     const files = [...watch("images")];
     reset({
-      images: files?.filter((el) => el.name !== imageName),
+      images: files?.filter((el) => el !== image),
     });
-    if (previews.images.some((el) => el.name === imageName))
+    if (previews.images.some((el) => el === image))
       setPreviews((prev) => ({
         ...prev,
-        images: previews.images.filter((el) => el.name !== imageName),
+        images: previews.images.filter((el) => el !== image),
       }));
   };
+  const handleUpdateProduct = async (data, e) => {
+    e.preventDefault();
+    const invalids = validate(payload, setInvalidFields);
+    if (invalids == 0) {
+      if (data.category) {
+        data.category = categories?.find(
+          (el) => el._id === data.category
+        )?.title;
+        const finalPayload = { ...data, ...payload };
+        const formData = new FormData();
+        for (let i of Object.entries(finalPayload)) {
+          formData.append(i[0], i[1]);
+        }
+        if (finalPayload.thumb) {
+          formData.append(
+            "thumb",
+            data.thumb.length === 0 ? previews.thumb : finalPayload.thumb[0]
+          );
+        }
+        if (finalPayload.images) {
+          const images =
+            finalPayload.images.length === 0
+              ? previews.images
+              : finalPayload.images;
+          for (let image of images) formData.append("images", image);
+        }
+        dispatch(showModal({ isShowModal: true, modalChildren: <Loading /> }));
+        const response = await updateProduct(formData, editProduct._id);
+        dispatch(showModal({ isShowModal: false, modalChildren: null }));
+        if (response.success) {
+          toast.success(response.msg, { style: { color: "#000" } });
+          render();
+          setPreviews({
+            thumb: "",
+            images: [],
+          });
+          setEditProduct(null);
+        } else {
+          toast.error(response.msg, { style: { color: "#000" } });
+        }
+      }
+    }
+  };
+
+  
   useEffect(() => {
-    handlePreviewsThumb(watch("thumb")[0]);
+    reset({
+      title: editProduct.title || "",
+      price: editProduct?.price || "",
+      quantity: editProduct?.quantity || "",
+      color: editProduct?.color || "",
+      category: editProduct?.category || "",
+      brand: editProduct?.brand || "",
+    });
+    setPayload({
+      description:
+        typeof editProduct?.description === "object"
+          ? editProduct?.description?.join(", ")
+          : editProduct?.description,
+    });
+    setPreviews({
+      thumb: editProduct?.thumb || "",
+      images: editProduct?.images || [],
+    });
+  }, [editProduct, reset]);
+
+  useEffect(() => {
+    if (watch("thumb") instanceof FileList && watch("thumb").length > 0) {
+      handlePreviewsThumb(watch("thumb")[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch("thumb")]);
 
   useEffect(() => {
-    handlePreviewsImages(watch("images"));
+    if (watch("images") instanceof FileList && watch("images").length > 0) {
+      handlePreviewsImages(watch("images"));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch("images")]);
-  console.log("previews", { ...previews });
+  console.log("file", previews);
   return (
-    <div className="w-full">
-      <h1 className="h-[75px] flex justify-between item-center text-3xl font-bold px-4 border-b">
-        <span>Create New Product</span>
-      </h1>
+    <div className="w-full flex flex-col gap-4 relative">
+      <div className="h-[69px] w-full"></div>
+      <div className="px-4 border-b bg-gray-100 flex justify-between items-center fixed top-0 right-0 left-[327px]">
+        <h1 className="text-3xl font-bold tracking-tight">Cập nhập sản phẩm</h1>
+        <span
+          className="text-main hover:underline cursor-pinter"
+          onClick={() => setEditProduct(null)}
+        >
+          <Button>Quay trở lại</Button>
+        </span>
+      </div>
       <div className="p-4">
-        <form onSubmit={handleSubmit(handleCreateProduct)}>
+        <form onSubmit={handleSubmit(handleUpdateProduct)}>
           <InputForm
             label="Name product"
             register={register}
@@ -176,7 +227,7 @@ const CreateProduct = () => {
               label="Category"
               id="category"
               options={categories?.map((cate) => ({
-                code: cate._id,
+                code: cate.title,
                 value: cate.title,
               }))}
               register={register}
@@ -192,7 +243,11 @@ const CreateProduct = () => {
               id="brand"
               disable={watch("category") ? false : true}
               options={categories
-                ?.find((cate) => cate._id === watch("category"))
+                ?.find(
+                  (cate) =>
+                    cate?.title?.toLowerCase() ===
+                    watch("category")?.toLowerCase()
+                )
                 ?.brand?.map((brand) => ({
                   code: brand,
                   value: brand,
@@ -212,6 +267,7 @@ const CreateProduct = () => {
             label="Description"
             inValidFileds={inValidFileds}
             setInvalidFields={setInvalidFields}
+            value={payload?.description}
           />
           <div className="flex flex-col gap-2 mt-8">
             <label className="font-semibold" htmlFor="thumb">
@@ -244,7 +300,7 @@ const CreateProduct = () => {
             </div>
           )}
           <div className="flex flex-col gap-2 mt-8">
-            <label className="font-semibold" htmlFor="thumb">
+            <label className="font-semibold" htmlFor="images">
               Upload images of Product
             </label>
             <input
@@ -259,18 +315,18 @@ const CreateProduct = () => {
               </small>
             )}
           </div>
-          {previews.images?.length > 0 && (
+          {previews?.images?.length > 0 && (
             <div className="my-4 flex w-full gap-3 flex-wrap">
-              {previews.images?.map((el) => (
-                <Fragment key={el.name}>
+              {previews?.images?.map((el, index) => (
+                <Fragment key={index}>
                   <img
-                    src={el.path}
+                    src={el}
                     alt="products"
                     className="w-[200px] object-contain"
                   />
                   <span
                     className="cursor-pointer my-2"
-                    onClick={() => handleDeletePreviewsImages(el.name)}
+                    onClick={() => handleDeletePreviewsImages(el)}
                   >
                     <GrClose />
                   </span>
@@ -279,12 +335,16 @@ const CreateProduct = () => {
             </div>
           )}
           <div className="mt-8">
-            <Button type="submit">Create New Products</Button>
+            <Button type="submit">Updated Products</Button>
           </div>
         </form>
       </div>
     </div>
   );
 };
-
-export default CreateProduct;
+UpdateProducts.propTypes = {
+  editProduct: PropTypes.bool,
+  render: PropTypes.func,
+  setEditProduct: PropTypes.setEditProduct,
+};
+export default memo(UpdateProducts);

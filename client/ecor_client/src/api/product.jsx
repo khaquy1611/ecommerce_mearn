@@ -23,10 +23,23 @@ export const productRatings = (data) =>
     withCredentials: true,
   });
 export const createProduct = (data) =>
+  axios({
+    url: `/product/`,
+    method: `POST`,
+    mode: "no-cors",
+    data,
+    withCredentials: true,
+  });
+export const updateProduct = (data, pid) =>
+  axios({
+    url: "/product/" + pid,
+    method: "PUT",
+    data,
+  });
+export const deleteProduct = (pid) =>
 axios({
-  url: `/product/`,
-  method: `POST`,
+  url: "/product/" + pid,
+  method: "DELETE",
   mode: "no-cors",
-  data,
   withCredentials: true,
 });

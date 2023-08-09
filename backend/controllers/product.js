@@ -125,7 +125,14 @@ const getProducts = asyncHandler(async (req, res) => {
 
 // Phương thức cập nhập sản phẩm
 const updateProduct = asyncHandler(async (req, res) => {
-  const { pid } = req.params;
+  const { pid } = req?.params;
+  const files = req?.files;
+  if (files?.thumb) {
+    req.body.thumb = files?.thumb[0]?.path;
+  }
+  if (files?.images) {
+    req.body.images = files?.images?.map(el => el.path);
+  }
   if (req.body && req.body.title) req.body.slug = slugify(req.body.title);
   const updatedProduct = await Product.findByIdAndUpdate(pid, req.body, {
     new: true,
@@ -135,7 +142,6 @@ const updateProduct = asyncHandler(async (req, res) => {
     msg: updatedProduct
       ? `Câp nhập sản phẩm thành công`
       : `Cập nhập sản phẩm thất bại`,
-    updatedProduct: updatedProduct ? updatedProduct : null,
   });
 });
 // Phương thức xóa sản phẩm
