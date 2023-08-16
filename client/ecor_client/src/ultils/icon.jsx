@@ -12,7 +12,10 @@ import {
   AiFillGift,
   AiOutlineDown,
   AiOutlineDashboard,
+  AiFillEdit,
+  AiFillDelete
 } from "react-icons/ai";
+import { BiCustomize } from "react-icons/bi";
 import { IoIosArrowForward } from "react-icons/io";
 import { HiEyeOff, HiEye } from "react-icons/hi";
 import { TbBrandProducthunt } from "react-icons/tb";
@@ -42,6 +45,9 @@ const icons = {
   MdGroup,
   TbBrandProducthunt,
   RiBillLine,
-  GrClose
+  GrClose,
+  AiFillEdit,
+  AiFillDelete,
+  BiCustomize
 };
 export default icons;

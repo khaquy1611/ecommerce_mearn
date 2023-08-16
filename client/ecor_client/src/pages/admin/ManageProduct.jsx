@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, useCallback } from "react";
-import { InputForm } from "../../components";
+import { InputForm, CustomizeVariants } from "../../components";
 import { useForm } from "react-hook-form";
 import { getProducts } from "../../api";
 import moment from "moment";
@@ -16,8 +16,10 @@ import Swal from "sweetalert2";
 import { deleteProduct } from "../../api";
 import { toast } from "react-toastify";
 import UpdateProducts from "./UpdateProducts";
+import icon from "../../ultils/icon";
 
 const ManageProduct = () => {
+  const { AiFillEdit, AiFillDelete, BiCustomize } = icon;
   const {
     register,
     formState: { errors },
@@ -30,9 +32,12 @@ const ManageProduct = () => {
   const [counts, setCounts] = useState(0);
   const [editProduct, setEditProduct] = useState(null);
   const [update, setUpdate] = useState(false);
-
+  const [customizevariants, setCustomizeVariants] = useState(null);
   const render = useCallback(() => {
     setUpdate(!update);
+  });
+  const handleCustomizeVariants = useCallback((el) => {
+    setCustomizeVariants(el);
   });
   const handleDeleteProduct = (pid = "") => {
     Swal.fire({
@@ -89,6 +94,15 @@ const ManageProduct = () => {
           />
         </div>
       )}
+      {customizevariants && (
+        <div className="absolute inset-0 bg-gray-100 min-h-screen z-50">
+          <CustomizeVariants 
+          customizevariants={customizevariants}
+          render={render} 
+          setCustomizeVariants={setCustomizeVariants}
+          />
+        </div>
+      )}
       <div className="h-[69px] w-full"></div>
       <div className="px-4 border-b w-full bg-gray-100 flex justify-between items-center fixed top-0">
         <h1 className="text-3xl font-bold tracking-tight">Quản lý sản phẩm</h1>
@@ -117,6 +131,7 @@ const ManageProduct = () => {
             <th className="text-center py-2">Đã bán</th>
             <th className="text-center py-2">Màu sắc</th>
             <th className="text-center py-2">Đánh giá</th>
+            <th className="text-center py-2">Variants</th>
             <th className="text-center py-2">Ngày tạo</th>
             <th className="text-center py-2">Hành động</th>
           </tr>
@@ -145,18 +160,22 @@ const ManageProduct = () => {
                 <td className="text-center py-2">{el.sold}</td>
                 <td className="text-center py-2">{el.color}</td>
                 <td className="text-center py-2">{el.totalRatings}</td>
+                <td className="text-center py-2">{el.variants?.length || 0}</td>
                 <td className="text-center py-2">
                   {moment(el.createdAt).format("DD/MM/YYYY")}
                 </td>
                 <td className="text-center py-2">
                   <span
                     onClick={() => setEditProduct(el)}
-                    className="text-blue-500 hover:underline cursor-pointer px-1"
+                    className="text-blue-500 hover:text-orange-500 inline-block hover:underline cursor-pointer pointer px-1"
                   >
-                    Edit
+                    <AiFillEdit />
                   </span>
-                  <span onClick={() => handleDeleteProduct(el._id)} className="text-blue-500 hover:underline cursor-pointer px-1">
-                    Delete
+                  <span onClick={() => handleDeleteProduct(el._id)} className="text-blue-500 hover:text-orange-500 inline-block hover:underline cursor-pointer pointer px-1">
+                    <AiFillDelete />
+                  </span>
+                  <span onClick={() => handleCustomizeVariants(el)} className="text-blue-500 hover:text-orange-500 inline-block hover:underline cursor-pointer pointer px-1">
+                    <BiCustomize />
                   </span>
                 </td>
               </tr>

@@ -43,3 +43,9 @@ axios({
   mode: "no-cors",
   withCredentials: true,
 });
+export const addVariants = (pid,data) => 
+axios({
+  url: "/product/variants/" + pid,
+  method: "PUT",
+  data
+})

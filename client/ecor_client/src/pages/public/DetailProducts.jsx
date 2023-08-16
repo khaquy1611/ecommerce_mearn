@@ -10,6 +10,7 @@ import {
   ProductInfomation,
   CustomSlider,
 } from "../../components";
+import clsx from "clsx";
 import Slider from "react-slick";
 import { settings } from "../../ultils/settings";
 import ReactImageMagnify from "react-image-magnify";
@@ -19,15 +20,24 @@ import {
   renderStartFromNumber,
 } from "../../ultils/helper";
 import { productExtraInfomation } from "../../ultils/contains";
-import DOMPurify from 'dompurify';
+import DOMPurify from "dompurify";
 
 const DetailProducts = () => {
-  const { pid, title, category } = useParams();
+  const { pid, category } = useParams();
   const [product, setProduct] = useState({});
   const [quantity, setQuantity] = useState(1);
   const [currentImage, setCurrentImage] = useState(null);
   const [relatedProduct, setRelatedProduct] = useState(null);
   const [update, setUpdate] = useState(null);
+  const [variants, setVariants] = useState("");
+  const [currenProduct, setCurrentProduct] = useState({
+    title: "",
+    thumb: "",
+    images: [],
+    price: "",
+    color: "",
+  });
+  const [productsVarriants, setProductsVarriants] = useState({});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchProductData = async () => {
     const response = await getProduct(pid);
@@ -85,12 +95,36 @@ const DetailProducts = () => {
     },
     [quantity]
   );
+  useEffect(() => {
+    if (product) {
+      setProductsVarriants(
+        product?.varriants?.find((el) => el._id === variants)
+      );
+    }
+  }, []);
+  useEffect(() => {
+    if (variants) {
+      setCurrentProduct((prev) => ({
+        ...prev,
+        title: productsVarriants?.title,
+        thumb: productsVarriants?.thumb,
+        images: productsVarriants?.images,
+        price: productsVarriants?.price,
+        color: productsVarriants?.color,
+      }));
+    }
+  }, [currenProduct]);
   return (
     <div className="w-full">
       <div className="h-[81px] flex justify-center items-center bg-gray-100">
         <div className="w-main">
-          <h3 className="font-semibold">{title}</h3>
-          <Breadcrumbs title={title} category={category} />
+          <h3 className="font-semibold">
+            {currenProduct?.title || product?.title}
+          </h3>
+          <Breadcrumbs
+            title={currenProduct?.title || product?.title}
+            category={category}
+          />
         </div>
       </div>
       <div className="w-main m-auto mt-4 flex">
@@ -101,10 +135,10 @@ const DetailProducts = () => {
                 smallImage: {
                   alt: "Wristwatch by Ted Baker London",
                   isFluidWidth: true,
-                  src: currentImage,
+                  src: currenProduct?.thumb || currentImage,
                 },
                 largeImage: {
-                  src: currentImage,
+                  src: currenProduct?.thumb || currentImage,
                   width: 1800,
                   height: 1500,
                 },
@@ -114,8 +148,22 @@ const DetailProducts = () => {
 
           <div className="w-[458px]">
             <Slider className="images-slider cursor-pointer" {...settings}>
-              {product?.images &&
+              {currenProduct?.images?.length === 0 &&
                 product?.images?.map((el) => (
+                  <div
+                    onClick={(e) => handleClickImage(e, el)}
+                    className="flex w-full justify-beetween"
+                    key={el}
+                  >
+                    <img
+                      src={el}
+                      alt="sub-product"
+                      className="h-[143px] w-[143px] border object-cover"
+                    />
+                  </div>
+                ))}
+              {currenProduct?.images?.length > 0 &&
+                currenProduct?.images?.map((el) => (
                   <div
                     onClick={(e) => handleClickImage(e, el)}
                     className="flex w-full justify-beetween"
@@ -134,7 +182,7 @@ const DetailProducts = () => {
         <div className="flex pr-[22px] flex-col gap-4 w-2/5">
           <div className="flex items-center justify-between">
             <h2 className="text-[30px] font-semibold">{`${formatMoney(
-              formatPrice(product?.price)
+              formatPrice(currenProduct?.price || product?.price)
             )} VNĐ`}</h2>
             <span className="text-sm text-main">{`(Kho: ${product.quantity})`}</span>
           </div>
@@ -145,13 +193,64 @@ const DetailProducts = () => {
             <span className="text-main">{`(Đã bán: ${product.sold} cái)`}</span>
           </div>
           <ul className="list-square text-sm text-gray-500 pl-4">
-          {product.description?.length > 1 && product.description?.map((el) => (
-              <li className="leading-6" key={el}>
-                {el}
-              </li>
-            ))}
-            {product.description?.length === 1 && <div className="text-sm justify-center line-clamp-[10px] mb-8" dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(product?.description[0]) }}></div>}
+            {product.description?.length > 1 &&
+              product.description?.map((el) => (
+                <li className="leading-6" key={el}>
+                  {el}
+                </li>
+              ))}
+            {product.description?.length === 1 && (
+              <div
+                className="text-sm justify-center line-clamp-[10px] mb-8"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(product?.description[0]),
+                }}
+              ></div>
+            )}
           </ul>
+          <div className="my-4 flex gap-4">
+            <span className="font-bold">Color:</span>
+            <div className="flex flex-wrap gap-4 items-center w-full">
+              <div
+                onClick={() => setVariants(null)}
+                className={clsx(
+                  "flex items-center gap-2 p-2 border cursor-pointer",
+                  !variants && "border-red-500"
+                )}
+              >
+                <img
+                  src={product.thumb}
+                  alt="thumb"
+                  className="w-8 h-8 rounded-md object-cover"
+                />
+                <span>
+                  <span>{product.color}</span>
+                  <span>{product.price}</span>
+                </span>
+              </div>
+              {product &&
+                product?.varriants?.map((el, index) => (
+                  <div
+                    onClick={() => setVariants(el._id)}
+                    className={clsx(
+                      "flex items-center gap-2 p-2 border cursor-pointer",
+                      variants === el._id && "border-red-500"
+                    )}
+                    key={index}
+                  >
+                    <img
+                      src={el?.thumb}
+                      alt="thumb"
+                      className="w-8 h-8 rounded-md object-cover"
+                    />
+                    <span>
+                      <span>{el?.color}</span>
+                      <span>{el?.price}</span>
+                    </span>
+                  </div>
+                ))}
+            </div>
+          </div>
           <div className="flex flex-col gap-8">
             <div className="flex items-center gap-4">
               <span className="font-semibold">Quanlity:</span>

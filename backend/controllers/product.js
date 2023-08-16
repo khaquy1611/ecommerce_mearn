@@ -3,11 +3,12 @@ const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 const { PAGE } = require("../const");
 const { CURRENT_PAGE, LIMITS_PAGE } = require("../const/const");
+const makeSKU = require("uniqid");
 // Phương thức tạo sản phẩm
 const createProduct = asyncHandler(async (req, res) => {
-  const { title, price, description, brand, category, color} = req.body;
+  const { title, price, description, brand, category, color } = req.body;
   const thumb = req?.files?.thumb[0].path;
-  const images = req?.files?.images?.map(el => el?.path);
+  const images = req?.files?.images?.map((el) => el?.path);
   if (!(title && price && description && brand && category && color))
     throw new Error("Thiếu trường đầu vào");
   req.body.slug = slugify(title);
@@ -72,14 +73,16 @@ const getProducts = asyncHandler(async (req, res) => {
   }
   let queryObject = {};
   if (queries?.q) {
-    delete forMatedQueries.q
-    queryObject = { $or: [
-      { color: { $regex: queries?.q, $options: 'i'}},
-      { title: { $regex: queries?.q, $options: 'i'}},
-      { category: { $regex: queries?.q, $options: 'i'}},
-      { brand: { $regex: queries?.q, $options: 'i'}},
-      { description: { $regex: queries?.q, $options: 'i'}},
-    ]};
+    delete forMatedQueries.q;
+    queryObject = {
+      $or: [
+        { color: { $regex: queries?.q, $options: "i" } },
+        { title: { $regex: queries?.q, $options: "i" } },
+        { category: { $regex: queries?.q, $options: "i" } },
+        { brand: { $regex: queries?.q, $options: "i" } },
+        { description: { $regex: queries?.q, $options: "i" } },
+      ],
+    };
   }
   let qr = { ...forMatedQueries, ...colorQueriesObject, ...queryObject };
   let queryCommand = Product.find(qr);
@@ -131,7 +134,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     req.body.thumb = files?.thumb[0]?.path;
   }
   if (files?.images) {
-    req.body.images = files?.images?.map(el => el.path);
+    req.body.images = files?.images?.map((el) => el.path);
   }
   if (req.body && req.body.title) req.body.slug = slugify(req.body.title);
   const updatedProduct = await Product.findByIdAndUpdate(pid, req.body, {
@@ -176,7 +179,11 @@ const ratings = asyncHandler(async (req, res) => {
         ratings: { $elemMatch: alreadyRated },
       },
       {
-        $set: { "ratings.$.star": star, "ratings.$.comment": comment, "ratings.$.updatedAt": updatedAt },
+        $set: {
+          "ratings.$.star": star,
+          "ratings.$.comment": comment,
+          "ratings.$.updatedAt": updatedAt,
+        },
       },
       {
         new: true,
@@ -228,6 +235,37 @@ const uploadImagesProduct = asyncHandler(async (req, res) => {
   });
 });
 
+// Add Variants
+const addVariants = asyncHandler(async (req, res) => {
+  const { pid } = req.params;
+  const { title, price, color } = req.body;
+  const thumb = req?.files?.thumb[0]?.path;
+  const images = req.files?.images?.map((el) => el.path);
+  if (!(title && price && color)) throw new Error("Missing Inputs");
+  req.body.slug = slugify(title);
+  const response = await Product.findByIdAndUpdate(
+    pid,
+    {
+      $push: {
+        varriants: {
+          color,
+          price,
+          title,
+          thumb,
+          images,
+          sku: makeSKU().toUpperCase(),
+        },
+      },
+    },
+    { new: true }
+  );
+  return res.status(200).json({
+    success: response ? true : false,
+    status: response ? true : false,
+    mes: response ? `Thêm variants thành công` : `Thêm variants thất bại`,
+  });
+});
+
 module.exports = {
   createProduct,
   getProduct,
@@ -236,4 +274,5 @@ module.exports = {
   deleteProduct,
   ratings,
   uploadImagesProduct,
+  addVariants,
 };

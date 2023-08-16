@@ -125,11 +125,11 @@ const ProductInfomation = ({
           <div className="flex flex-col gap-4">
             {ratings?.map((el) => (
               <Comment
-                key={el._id}
-                star={el.star}
-                updatedAt={el.updatedAt}
-                comment={el.comment}
-                name={`${el.postedBy.firstName} ${el.postedBy.lastName}`}
+                key={el?._id}
+                star={el?.star}
+                updatedAt={el?.updatedAt}
+                comment={el?.comment}
+                name={`${el?.postedBy?.firstName} ${el?.postedBy?.lastName}`}
               />
             ))}
           </div>
