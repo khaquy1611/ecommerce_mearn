@@ -34,3 +34,4 @@ export { default as InputForm } from "./Inputs/InputForm";
 export { default as Select } from "./Inputs/Select";
 export { default as MarkDownEditor } from "./Inputs/MarkDownEditor";
 export { default as CustomizeVariants } from "./Products/CustomizeVariants";
+export { default as MemberSidebar } from './Sidebar/MemberSidebar';

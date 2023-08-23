@@ -213,6 +213,36 @@ export const adminSidebar = [
     icon: <RiBillLine size={20} />,
   },
 ];
+export const memberSidebar = [
+  {
+    id: 1,
+    type: "SINGLE",
+    text: "Dashboard",
+    path: `/${path.MEMBER}/${path.PERSONAL}`,
+    icon: <AiOutlineDashboard size={20} />,
+  },
+  {
+    id: 2,
+    type: "SINGLE",
+    text: "Giỏ hàng của tôi",
+    path: `/${path.MEMBER}/${path.MY_CART}`,
+    icon: <MdGroup size={20} />,
+  },
+  {
+    id: 3,
+    type: "SINGLE",
+    text: "Lịch sử mua hàng",
+    path: `/${path.MEMBER}/${path.HISTORY}`,
+    icon: <RiBillLine size={20} />,
+  },
+  {
+    id: 4,
+    type: "SINGLE",
+    text: "wishList",
+    path: `/${path.MEMBER}/${path.WISHLIST}`,
+    icon: <RiBillLine size={20} />,
+  },
+];
 export const blockedUser = [
   {
     code: true,

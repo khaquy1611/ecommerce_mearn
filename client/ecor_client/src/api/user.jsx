@@ -88,3 +88,8 @@ export const deleteUserApi = (uid) =>
     mode: "no-cors",
     withCredentials: true,
   });
+export const apiUpdateCurrent = (data) => axios({
+  url: `/user/current`,
+  method: 'PUT',
+  data
+})

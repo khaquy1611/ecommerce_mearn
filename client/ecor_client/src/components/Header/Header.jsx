@@ -1,10 +1,24 @@
+import { useState, useEffect } from "react";
 import logo from "../../assets/logo.png";
 import icons from "../../ultils/icon";
 import { Link } from "react-router-dom";
 import path from "../../ultils/path";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch,  } from "react-redux";
+import { logout } from "../../store/users/UserSlice";
 const Header = () => {
   const { current } = useSelector((state) => state.user);
+  const [isShowOptions, setIsShowOptions] = useState(false);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const handleClickOutOptions = (e) => {
+      const profile = document.getElementById(`profile`);
+      if (!profile.contains(e.target)) setIsShowOptions(false);
+    };
+    document.addEventListener(`click`, handleClickOutOptions);
+    return () => {
+      document.removeEventListener(`click`, handleClickOutOptions);
+    };
+  }, []);
   const { RiPhoneFill, MdEmail, BsHandbagFill, FaUserCircle } = icons;
   return (
     <div className="w-main flex justify-between h-[110px] mx-auto py-[35px]">
@@ -32,17 +46,41 @@ const Header = () => {
               <BsHandbagFill color="red" />
               <span>0 items(0)</span>
             </div>
-            <Link
-              className="cursor-pointer flex items-center justify-center px-6 gap-2"
-              to={
-                current?.role === 0
-                  ? `/${path.ADMIN}/${path.DASHBOARD}`
-                  : `/${path.MEMBER}/${path.PERSONAL}`
-              }
+            <div
+              className="cursor-pointer flex items-center justify-center px-6 gap-2 relative"
+              onClick={() => setIsShowOptions(!isShowOptions)}
+              id="profile"
             >
               <FaUserCircle color="red" />
               <span>Profile: </span>
-            </Link>
+              {isShowOptions && (
+                <div 
+                onClick={e => e.stopPropagation()}
+                className="absolute top-full flex flex-col items-center left-0 bg-gray-100 border min-w-[150px] py-2"
+                >
+                  <Link
+                    className="p-2 w-full hover:bg-sky-100"
+                    to={`/${path.MEMBER}/${path.PERSONAL}`}
+                  >
+                    Person
+                  </Link>
+                  {+current.role === 0 && (
+                    <Link
+                      className="p-2 w-full hover:bg-sky-100"
+                      to={`/${path.ADMIN}/${path.DASHBOARD}`}
+                    >
+                      Admin WorkSpace
+                    </Link>
+                  )}
+                  <span
+                    onClick={() => dispatch(logout())}
+                    className="p-2 w-full hover:bg-sky-100"
+                  >
+                    Logout
+                  </span>
+                </div>
+              )}
+            </div>
           </>
         )}
       </div>

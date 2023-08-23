@@ -20,7 +20,13 @@ import {
   CreateProduct,
   DashBoard,
 } from "./pages/admin";
-import { MemberLayout, Personal } from "./pages/member";
+import { 
+  MemberLayout, 
+  Personal, 
+  History,
+  MyCart,
+  Wishlist
+} from "./pages/member";
 import path from "./ultils/path";
 import { getCategories } from "./store/categories/categoriesActions";
 import { useDispatch, useSelector } from "react-redux";
@@ -70,6 +76,9 @@ function App() {
         {/* MEMBER SITE */}
         <Route path={path.MEMBER} element={<MemberLayout />}>
           <Route path={path.PERSONAL} element={<Personal />}></Route>
+          <Route path={path.MY_CART} element={<MyCart id='cart' />}></Route>
+          <Route path={path.WISHLIST} element={<Wishlist />}></Route>
+          <Route path={path.HISTORY} element={<History />}></Route>
         </Route>
         <Route path={path.FINAL_REGISTER} element={<FinalRegister />}></Route>
         <Route path={path.LOGIN} element={<Login />}></Route>
